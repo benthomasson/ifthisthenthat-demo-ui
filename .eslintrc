@@ -34,7 +34,8 @@
   "plugins": [
     "@typescript-eslint",
     "react-hooks",
-    "eslint-plugin-react-hooks"
+    "eslint-plugin-react-hooks",
+    "@tanstack/eslint-plugin-query"
   ],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "off",
@@ -44,10 +45,20 @@
     "prettier/prettier": "off",
     "import/no-unresolved": "off",
     "import/extensions": "off",
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "types": {
+          "object": false
+        },
+        "extendDefaults": true
+      }
+    ]
   },
   "env": {
     "browser": true,
     "node": true
-  }
+  },
+  "ignorePatterns": ["*.typegen.ts"]
 }

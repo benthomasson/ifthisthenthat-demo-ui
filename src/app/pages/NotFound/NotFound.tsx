@@ -16,25 +16,23 @@ const NotFound: React.FunctionComponent = () => {
     function handleClick() {
       history.push('/');
     }
-    return (
-      <Button onClick={handleClick}>Take me home</Button>
-    );
+    return <Button onClick={handleClick}>Take me home</Button>;
   }
 
   return (
     <PageSection>
-    <EmptyState variant="full">
-      <EmptyStateIcon icon={ExclamationTriangleIcon} />
-      <Title headingLevel="h1" size="lg">
-        404 Page not found
-      </Title>
-      <EmptyStateBody>
-        We didn&apos;t find a page that matches the address you navigated to.
-      </EmptyStateBody>
-      <GoHomeBtn />
-    </EmptyState>
-  </PageSection>
-  )
+      <EmptyState variant="full">
+        <EmptyStateIcon icon={ExclamationTriangleIcon} />
+        <Title headingLevel="h1" size="lg">
+          404 Page not found
+        </Title>
+        <EmptyStateBody>
+          We didn&apos;t find a page that matches the address you navigated to.
+        </EmptyStateBody>
+        <GoHomeBtn />
+      </EmptyState>
+    </PageSection>
+  );
 };
 
 export { NotFound };
