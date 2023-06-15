@@ -5,17 +5,24 @@ import {
   AvailableConditionsResponse,
   AvailableSourcesResponse,
 } from '@app/api/rulebookApi';
+import {
+  createValidator,
+  CreateValidator,
+  validateAgainstSchema,
+} from '@app/components/ConfigurationForm/validator';
 
 interface PipeMachineContext {
   sourceTypes: SourceType[];
   conditionTypes?: ConditionType[];
   actionTypes: ActionType[];
   selectedSourceSchema?: object;
+  sourceConfigValidator?: CreateValidator;
   selectedCondition: {
     condition?: ConditionType;
     configuration?: object;
   };
   selectedActionSchema?: object;
+  actionConfigValidator?: CreateValidator;
   request: {
     name: string;
     source: Source;
@@ -39,7 +46,12 @@ const pipeMachine = createMachine(
         | { type: 'conditionTypeChange'; conditionType: ConditionType }
         | { type: 'conditionConfigChange'; conditionConfig: object }
         | { type: 'actionTypeChange'; actionType: string }
-        | { type: 'actionConfigChange'; actionConfig: object },
+        | { type: 'actionConfigChange'; actionConfig: object }
+        | { type: 'isActionConfigInvalid' }
+        | { type: 'isActionConfigValid' }
+        | { type: 'isSourceConfigInvalid' }
+        | { type: 'isSourceConfigValid' }
+        | { type: 'submitForm' },
       services: {} as {
         fetchSourceTypes: {
           data: AvailableSourcesResponse;
@@ -68,40 +80,123 @@ const pipeMachine = createMachine(
         },
       },
     },
-    initial: 'Step one',
+    initial: 'step one',
     states: {
-      'Step one': {
-        initial: 'fetching',
+      'step one': {
+        type: 'parallel',
         states: {
-          fetching: {
-            invoke: {
-              id: 'getSourceTypes',
-              src: 'fetchSourceTypes',
-              onDone: {
-                actions: 'setSourceTypes',
-                target: 'isInvalid',
+          source: {
+            initial: 'fetching',
+            states: {
+              fetching: {
+                invoke: {
+                  id: 'getSourceTypes',
+                  src: 'fetchSourceTypes',
+                  onDone: {
+                    actions: 'setSourceTypes',
+                    target: 'validate',
+                  },
+                },
+              },
+              validate: {
+                always: [
+                  {
+                    cond: 'isSourceTypeValid',
+                    target: 'valid',
+                  },
+                  {
+                    target: 'invalid',
+                  },
+                ],
+              },
+              invalid: {
+                tags: ['sourceTypeInvalid', 'stepOneInvalid'],
+              },
+              valid: {
+                tags: 'sourceTypeValid',
+              },
+            },
+            on: {
+              sourceTypeChange: {
+                actions: 'setSourceType',
+                target: ['.validate', '#pipeMachine.wizard.idle'],
               },
             },
           },
-          isInvalid: {},
-          isValid: {},
-        },
-        on: {
-          nameChange: {
-            actions: 'setName',
+          sourceConfig: {
+            initial: 'idle',
+            states: {
+              idle: {
+                always: [{ target: 'validate', cond: 'isSourceTypeValid' }],
+              },
+              validate: {
+                invoke: {
+                  id: 'validateSourceConfig',
+                  src: (context) => (callback) => {
+                    const isConfigValid =
+                      context.selectedSourceSchema &&
+                      context.sourceConfigValidator &&
+                      validateAgainstSchema(
+                        context.sourceConfigValidator,
+                        context.selectedSourceSchema,
+                        context.request.source.source_args
+                      );
+                    callback(isConfigValid ? 'isSourceConfigValid' : 'isSourceConfigInvalid');
+                  },
+                },
+                on: {
+                  isSourceConfigValid: 'valid',
+                  isSourceConfigInvalid: 'invalid',
+                },
+              },
+              valid: {},
+              invalid: {
+                tags: ['stepOneInvalid'],
+              },
+            },
+            on: {
+              sourceConfigChange: {
+                actions: 'setSourceConfig',
+                target: '.validate',
+              },
+            },
           },
-          sourceTypeChange: {
-            actions: 'setSourceType',
-          },
-          sourceConfigChange: {
-            actions: 'setSourceConfig',
+          name: {
+            initial: 'validate',
+            states: {
+              validate: {
+                always: [
+                  {
+                    cond: 'isNameValid',
+                    target: 'valid',
+                  },
+                  {
+                    target: 'invalid',
+                  },
+                ],
+              },
+              invalid: {
+                tags: ['nameInvalid', 'stepOneInvalid'],
+              },
+              valid: {
+                tags: 'nameValid',
+              },
+            },
+            on: {
+              nameChange: {
+                actions: 'setName',
+                target: '.validate',
+              },
+            },
           },
         },
       },
-      'Step two': {
+      'step two': {
         initial: 'isInvalid',
         states: {
-          isInvalid: {},
+          isInvalid: {
+            tags: 'stepTwoInvalid',
+          },
           isValid: {},
           fetchingConditions: {
             invoke: {
@@ -109,14 +204,14 @@ const pipeMachine = createMachine(
               src: 'fetchConditionTypes',
               onDone: {
                 actions: 'setConditionTypes',
-                target: 'isInvalid',
+                target: 'isValid',
               },
             },
           },
         },
         on: {
           sourceTypeChange: {
-            target: 'Step two.fetchingConditions',
+            target: 'step two.fetchingConditions',
           },
           conditionTypeChange: {
             actions: 'setSelectedCondition',
@@ -126,28 +221,97 @@ const pipeMachine = createMachine(
           },
         },
       },
-      'Step three': {
-        initial: 'fetchingActions',
+      'step three': {
+        type: 'parallel',
         states: {
-          isInvalid: {},
-          isValid: {},
-          fetchingActions: {
-            invoke: {
-              id: 'getActionTypes',
-              src: 'fetchActionTypes',
-              onDone: {
-                actions: 'setActionTypes',
-                target: 'isInvalid',
+          actionType: {
+            initial: 'fetchingActions',
+            states: {
+              fetchingActions: {
+                invoke: {
+                  id: 'getActionTypes',
+                  src: 'fetchActionTypes',
+                  onDone: {
+                    actions: 'setActionTypes',
+                    target: 'validate',
+                  },
+                },
+              },
+              validate: {
+                always: [
+                  {
+                    cond: 'isActionTypeValid',
+                    target: 'valid',
+                  },
+                  {
+                    target: 'invalid',
+                  },
+                ],
+              },
+              invalid: {
+                tags: ['actionTypeInvalid', 'stepThreeInvalid'],
+              },
+              valid: {
+                tags: 'actionTypeValid',
+              },
+            },
+            on: {
+              actionTypeChange: {
+                actions: 'setActionType',
+                target: ['.validate', '#pipeMachine.wizard.idle'],
+              },
+            },
+          },
+          actionConfig: {
+            initial: 'idle',
+            states: {
+              idle: {
+                always: [{ target: 'validate', cond: 'isActionTypeValid' }],
+              },
+              validate: {
+                invoke: {
+                  id: 'validateActionConfig',
+                  src: (context) => (callback) => {
+                    const isConfigValid =
+                      context.selectedActionSchema &&
+                      context.actionConfigValidator &&
+                      validateAgainstSchema(
+                        context.actionConfigValidator,
+                        context.selectedActionSchema,
+                        context.request.action.module_args
+                      );
+                    callback(isConfigValid ? 'isActionConfigValid' : 'isActionConfigInvalid');
+                  },
+                },
+                on: {
+                  isActionConfigValid: 'valid',
+                  isActionConfigInvalid: 'invalid',
+                },
+              },
+              valid: {},
+              invalid: {
+                tags: ['stepThreeInvalid'],
+              },
+            },
+            on: {
+              actionConfigChange: {
+                actions: 'setActionConfig',
+                target: '.validate',
               },
             },
           },
         },
-        on: {
-          actionTypeChange: {
-            actions: 'setActionType',
+      },
+      wizard: {
+        initial: 'idle',
+        states: {
+          idle: {
+            on: {
+              submitForm: 'submitted',
+            },
           },
-          actionConfigChange: {
-            actions: 'setActionConfig',
+          submitted: {
+            tags: 'submitted',
           },
         },
       },
@@ -165,9 +329,11 @@ const pipeMachine = createMachine(
         };
       }),
       setSourceType: assign((context, { sourceType }) => {
-        const schema = context.sourceTypes.find((source) => source.name === sourceType)?.schema;
+        const schema =
+          context.sourceTypes.find((source) => source.name === sourceType)?.schema ?? {};
         return {
           selectedSourceSchema: schema,
+          sourceConfigValidator: createValidator(schema),
           request: {
             ...context.request,
             source: {
@@ -223,6 +389,7 @@ const pipeMachine = createMachine(
         // const schema = context.actionTypes.find((action) => action.name === actionType)?.schema;
         return {
           selectedActionSchema: ACTION_SCHEMA_DEMO,
+          actionConfigValidator: createValidator(ACTION_SCHEMA_DEMO),
           request: {
             ...context.request,
             action: {
@@ -244,10 +411,17 @@ const pipeMachine = createMachine(
         };
       }),
     },
+    guards: {
+      isNameValid: ({ request }) => request.name.trim().length > 0,
+      isSourceTypeValid: ({ request }) => request.source.source_type.trim().length > 0,
+      isActionTypeValid: ({ request }) => request.action.name.trim().length > 0,
+    },
   }
 );
 
-export { pipeMachine };
+type pipeMachineType = typeof pipeMachine;
+
+export { pipeMachine, pipeMachineType };
 
 const ACTION_SCHEMA_DEMO = {
   type: 'object',
@@ -261,4 +435,5 @@ const ACTION_SCHEMA_DEMO = {
       description: 'Token to use with slack',
     },
   },
+  required: ['msg', 'token'],
 };

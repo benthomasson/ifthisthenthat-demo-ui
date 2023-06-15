@@ -1,9 +1,30 @@
-import React, { FunctionComponent, useContext, useRef } from 'react';
-import { Form, FormGroup, FormSelect, FormSelectOption, TextInput } from '@patternfly/react-core';
+import React, { FunctionComponent, useContext, useEffect, useRef } from 'react';
+import {
+  Form,
+  FormGroup,
+  FormGroupProps,
+  FormSelect,
+  FormSelectOption,
+  TextInput,
+} from '@patternfly/react-core';
 import ConfigurationForm from '@app/components/ConfigurationForm/ConfigurationForm';
 import { PipeStateContext } from '@app/pipes/PipeEdit/PipeContextProvider';
 import { useSelector } from '@xstate/react';
+import { pipeMachineType } from '@app/pipes/PipeEdit/pipeMachine';
+import { StateFrom } from 'xstate';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
+const submissionSelector = (state: StateFrom<pipeMachineType>) => {
+  return state.hasTag('submitted');
+};
+
+const nameInvalidSelector = (state: StateFrom<pipeMachineType>) => {
+  return state.hasTag('nameInvalid');
+};
+
+const sourceTypeInvalidSelector = (state: StateFrom<pipeMachineType>) => {
+  return state.hasTag('sourceTypeInvalid');
+};
 const SourceEdit: FunctionComponent = () => {
   const pipeServices = useContext(PipeStateContext);
   const { send } = pipeServices.pipeService;
@@ -19,9 +40,23 @@ const SourceEdit: FunctionComponent = () => {
     (state) => state.context.selectedSourceSchema
   );
 
-  const validateParameters = useRef<(() => boolean) | undefined>();
-  const registerValidateParameters = (callback: () => boolean): void => {
-    validateParameters.current = callback;
+  const isSubmitted = useSelector(pipeServices.pipeService, submissionSelector);
+  const nameIsInvalid = useSelector(pipeServices.pipeService, nameInvalidSelector);
+  const nameValidation: FormGroupProps['validated'] =
+    isSubmitted && nameIsInvalid ? 'error' : 'default';
+  const sourceTypeIsInvalid = useSelector(pipeServices.pipeService, sourceTypeInvalidSelector);
+  const sourceTypeValidation: FormGroupProps['validated'] =
+    isSubmitted && sourceTypeIsInvalid ? 'error' : 'default';
+
+  useEffect(() => {
+    if (isSubmitted) {
+      validateSourceConfig.current?.();
+    }
+  }, [isSubmitted]);
+
+  const validateSourceConfig = useRef<(() => boolean) | undefined>();
+  const registerValidateSourceConfig = (callback: () => boolean): void => {
+    validateSourceConfig.current = callback;
   };
 
   return (
@@ -31,6 +66,9 @@ const SourceEdit: FunctionComponent = () => {
         isRequired
         fieldId="pipe-name"
         helperText="Name used to identify the Pipe."
+        validated={nameValidation}
+        helperTextInvalid="Pipe Name is mandatory"
+        helperTextInvalidIcon={<ExclamationCircleIcon />}
       >
         <TextInput
           isRequired
@@ -40,6 +78,7 @@ const SourceEdit: FunctionComponent = () => {
           autoComplete="off"
           value={pipeName}
           onChange={(name) => send('nameChange', { name })}
+          validated={nameValidation}
         />
       </FormGroup>
       <FormGroup
@@ -47,6 +86,9 @@ const SourceEdit: FunctionComponent = () => {
         fieldId="source-type"
         isRequired
         helperText={'Type of source from the catalog'}
+        validated={sourceTypeValidation}
+        helperTextInvalid="Please select a Source Type"
+        helperTextInvalidIcon={<ExclamationCircleIcon />}
       >
         <FormSelect
           value={selectedSource.source_type}
@@ -54,6 +96,7 @@ const SourceEdit: FunctionComponent = () => {
           id="source-type"
           name="source-type"
           aria-label="Source type"
+          validated={sourceTypeValidation}
         >
           <FormSelectOption
             key={-1}
@@ -72,7 +115,7 @@ const SourceEdit: FunctionComponent = () => {
             schema={selectedSourceSchema}
             configuration={selectedSource.source_args}
             onChange={(sourceConfig) => send('sourceConfigChange', { sourceConfig })}
-            registerValidation={registerValidateParameters}
+            registerValidation={registerValidateSourceConfig}
           />
         </>
       )}

@@ -17,10 +17,19 @@ export function createValidator(schema: object): CreateValidator {
 
   return (model: object) => {
     validator(model);
-    return validator.errors?.length ? { details: validator.errors } : null;
+    return validator.errors?.length ? { details: validator.errors } : { details: [] };
   };
 }
 
-interface CreateValidator {
+export interface CreateValidator {
   (model: object): { details: ValidateFunction['errors'] } | null;
 }
+
+export const validateAgainstSchema = (
+  schemaValidator: CreateValidator,
+  schema: Record<string, any>,
+  model: unknown
+): boolean => {
+  const details = schemaValidator(model as object)?.details;
+  return details?.length === 0;
+};

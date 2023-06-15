@@ -1,15 +1,11 @@
 import React, { FunctionComponent } from 'react';
-import { Wizard, WizardStep } from '@patternfly/react-core/next';
-
 import { PipeStateProvider } from '@app/pipes/PipeEdit/PipeContextProvider';
 import {
   AvailableActionsResponse,
   AvailableConditionsResponse,
   AvailableSourcesResponse,
 } from '@app/api/rulebookApi';
-import ConditionEdit from '@app/pipes/PipeEdit/components/ConditionEdit';
-import ActionEdit from '@app/pipes/PipeEdit/components/ActionEdit';
-import SourceEdit from '@app/pipes/PipeEdit/components/SourceEdit';
+import PipeWizard from '@app/pipes/PipeEdit/components/PipeWizard';
 
 export interface PipeEditProps {
   getSourceTypes: () => Promise<AvailableSourcesResponse>;
@@ -26,17 +22,7 @@ const PipeEdit: FunctionComponent<PipeEditProps> = (props) => {
       getConditionTypes={getConditionTypes}
       getActionTypes={getActionTypes}
     >
-      <Wizard height={'100%'} title="new pipe wizard" onClose={onCancel} onSave={onCreate}>
-        <WizardStep name="Name and Source" id="first-step">
-          <SourceEdit />
-        </WizardStep>
-        <WizardStep name="Condition (optional)" id="second-step">
-          <ConditionEdit />
-        </WizardStep>
-        <WizardStep name="Action" id="third-step" footer={{ nextButtonText: 'Create' }}>
-          <ActionEdit />
-        </WizardStep>
-      </Wizard>
+      <PipeWizard onCancel={onCancel} onCreate={onCreate} />
     </PipeStateProvider>
   );
 };

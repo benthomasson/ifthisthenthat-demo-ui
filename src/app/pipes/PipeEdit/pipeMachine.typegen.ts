@@ -3,6 +3,7 @@
 export interface Typegen0 {
   '@@xstate/typegen': true;
   internalEvents: {
+    '': { type: '' };
     'done.invoke.getActionTypes': {
       type: 'done.invoke.getActionTypes';
       data: unknown;
@@ -51,25 +52,75 @@ export interface Typegen0 {
     fetchConditionTypes: 'sourceTypeChange';
     fetchSourceTypes: 'xstate.init';
   };
-  eventsCausingGuards: {};
+  eventsCausingGuards: {
+    isActionTypeValid: '';
+    isNameValid: '';
+    isSourceTypeValid: '';
+  };
   eventsCausingDelays: {};
   matchesStates:
-    | 'Step one'
-    | 'Step one.fetching'
-    | 'Step one.isInvalid'
-    | 'Step one.isValid'
-    | 'Step three'
-    | 'Step three.fetchingActions'
-    | 'Step three.isInvalid'
-    | 'Step three.isValid'
-    | 'Step two'
-    | 'Step two.fetchingConditions'
-    | 'Step two.isInvalid'
-    | 'Step two.isValid'
+    | 'step one'
+    | 'step one.name'
+    | 'step one.name.invalid'
+    | 'step one.name.valid'
+    | 'step one.name.validate'
+    | 'step one.source'
+    | 'step one.source.fetching'
+    | 'step one.source.invalid'
+    | 'step one.source.valid'
+    | 'step one.source.validate'
+    | 'step one.sourceConfig'
+    | 'step one.sourceConfig.idle'
+    | 'step one.sourceConfig.invalid'
+    | 'step one.sourceConfig.valid'
+    | 'step one.sourceConfig.validate'
+    | 'step three'
+    | 'step three.actionConfig'
+    | 'step three.actionConfig.idle'
+    | 'step three.actionConfig.invalid'
+    | 'step three.actionConfig.valid'
+    | 'step three.actionConfig.validate'
+    | 'step three.actionType'
+    | 'step three.actionType.fetchingActions'
+    | 'step three.actionType.invalid'
+    | 'step three.actionType.valid'
+    | 'step three.actionType.validate'
+    | 'step two'
+    | 'step two.fetchingConditions'
+    | 'step two.isInvalid'
+    | 'step two.isValid'
+    | 'wizard'
+    | 'wizard.idle'
+    | 'wizard.submitted'
     | {
-        'Step one'?: 'fetching' | 'isInvalid' | 'isValid';
-        'Step three'?: 'fetchingActions' | 'isInvalid' | 'isValid';
-        'Step two'?: 'fetchingConditions' | 'isInvalid' | 'isValid';
+        'step one'?:
+          | 'name'
+          | 'source'
+          | 'sourceConfig'
+          | {
+              name?: 'invalid' | 'valid' | 'validate';
+              source?: 'fetching' | 'invalid' | 'valid' | 'validate';
+              sourceConfig?: 'idle' | 'invalid' | 'valid' | 'validate';
+            };
+        'step three'?:
+          | 'actionConfig'
+          | 'actionType'
+          | {
+              actionConfig?: 'idle' | 'invalid' | 'valid' | 'validate';
+              actionType?: 'fetchingActions' | 'invalid' | 'valid' | 'validate';
+            };
+        'step two'?: 'fetchingConditions' | 'isInvalid' | 'isValid';
+        wizard?: 'idle' | 'submitted';
       };
-  tags: never;
+  tags:
+    | 'actionTypeInvalid'
+    | 'actionTypeValid'
+    | 'nameInvalid'
+    | 'nameValid'
+    | 'sourceTypeInvalid'
+    | 'sourceTypeValid'
+    | 'stepOneInvalid'
+    | 'stepThreeInvalid'
+    | 'stepTwoInvalid'
+    | 'submitted';
 }
