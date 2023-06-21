@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { Route, RouteComponentProps, Switch, useLocation } from 'react-router-dom';
-import { Dashboard } from '@app/Dashboard/Dashboard';
-import { Support } from '@app/Support/Support';
-import { GeneralSettings } from '@app/Settings/General/GeneralSettings';
-import { ProfileSettings } from '@app/Settings/Profile/ProfileSettings';
-import { NotFound } from '@app/NotFound/NotFound';
+import { Redirect, Route, RouteComponentProps, Switch, useLocation } from 'react-router-dom';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
+import { NotFound } from '@app/pages/NotFound/NotFound';
+import Rulebook from '@app/pages/Rulebook/Rulebook';
+import Log from '@app/pages/Log/Log';
+import NewPipe from '@app/pages/NewPipe/NewPipe';
+import { ErrorBoundaryFallback } from '@app/components/ErrorBoundaryFallBack/ErrorBoundaryFallback';
 
 let routeFocusTimer: number;
 export interface IAppRoute {
@@ -17,48 +17,39 @@ export interface IAppRoute {
   path: string;
   title: string;
   routes?: undefined;
+  excludeFromSideNav?: boolean;
 }
 
 export interface IAppRouteGroup {
   label: string;
   routes: IAppRoute[];
+  excludeFromSideNav?: boolean;
 }
 
 export type AppRouteConfig = IAppRoute | IAppRouteGroup;
 
 const routes: AppRouteConfig[] = [
   {
-    component: Dashboard,
+    component: Rulebook,
     exact: true,
-    label: 'Dashboard',
-    path: '/',
-    title: 'PatternFly Seed | Main Dashboard',
+    label: 'Rulebook',
+    path: '/rulebook',
+    title: 'Rulebook | EDA',
   },
   {
-    component: Support,
+    component: NewPipe,
     exact: true,
-    label: 'Support',
-    path: '/support',
-    title: 'PatternFly Seed | Support Page',
+    label: 'New Pipe',
+    path: '/rulebook/new-pipe',
+    title: 'New Pipe | EDA',
+    excludeFromSideNav: true,
   },
   {
-    label: 'Settings',
-    routes: [
-      {
-        component: GeneralSettings,
-        exact: true,
-        label: 'General',
-        path: '/settings/general',
-        title: 'PatternFly Seed | General Settings',
-      },
-      {
-        component: ProfileSettings,
-        exact: true,
-        label: 'Profile',
-        path: '/settings/profile',
-        title: 'PatternFly Seed | Profile Settings',
-      },
-    ],
+    component: Log,
+    exact: true,
+    label: 'Log',
+    path: '/log',
+    title: 'Log | EDA',
   },
 ];
 
@@ -103,12 +94,23 @@ const flattenedRoutes: IAppRoute[] = routes.reduce(
 );
 
 const AppRoutes = (): React.ReactElement => (
-  <Switch>
-    {flattenedRoutes.map(({ path, exact, component, title }, idx) => (
-      <RouteWithTitleUpdates path={path} exact={exact} component={component} key={idx} title={title} />
-    ))}
-    <PageNotFound title="404 Page Not Found" />
-  </Switch>
+  <ErrorBoundaryFallback>
+    <Switch>
+      <Route path={'/'} exact>
+        <Redirect to="/rulebook" />
+      </Route>
+      {flattenedRoutes.map(({ path, exact, component, title }, idx) => (
+        <RouteWithTitleUpdates
+          path={path}
+          exact={exact}
+          component={component}
+          key={idx}
+          title={title}
+        />
+      ))}
+      <PageNotFound title="404 Page Not Found" />
+    </Switch>
+  </ErrorBoundaryFallback>
 );
 
 export { AppRoutes, routes };

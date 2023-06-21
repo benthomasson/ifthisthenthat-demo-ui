@@ -8,7 +8,7 @@ import {
   Page,
   PageHeader,
   PageSidebar,
-  SkipToContent
+  SkipToContent,
 } from '@patternfly/react-core';
 import { routes, IAppRoute, IAppRouteGroup } from '@app/routes';
 import logo from '@app/bgimages/Patternfly-Logo.svg';
@@ -36,9 +36,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     function handleClick() {
       history.push('/');
     }
-    return (
-      <img src={logo} onClick={handleClick} alt="PatternFly Logo" />
-    );
+    return <img src={logo} onClick={handleClick} alt="PatternFly Logo" />;
   }
 
   const Header = (
@@ -53,7 +51,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const location = useLocation();
 
   const renderNavItem = (route: IAppRoute, index: number) => (
-    <NavItem key={`${route.label}-${index}`} id={`${route.label}-${index}`} isActive={route.path === location.pathname}>
+    <NavItem
+      key={`${route.label}-${index}`}
+      id={`${route.label}-${index}`}
+      isActive={route.path === location.pathname}
+    >
       <NavLink exact={route.exact} to={route.path}>
         {route.label}
       </NavLink>
@@ -74,9 +76,13 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const Navigation = (
     <Nav id="nav-primary-simple" theme="dark">
       <NavList id="nav-list-simple">
-        {routes.map(
-          (route, idx) => route.label && (!route.routes ? renderNavItem(route, idx) : renderNavGroup(route, idx))
-        )}
+        {routes
+          .filter((route) => !route.excludeFromSideNav)
+          .map(
+            (route, idx) =>
+              route.label &&
+              (!route.routes ? renderNavItem(route, idx) : renderNavGroup(route, idx))
+          )}
       </NavList>
     </Nav>
   );
@@ -85,17 +91,21 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     <PageSidebar
       theme="dark"
       nav={Navigation}
-      isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />
+      isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen}
+    />
   );
 
   const pageId = 'primary-app-container';
 
   const PageSkipToContent = (
-    <SkipToContent onClick={(event) => {
-      event.preventDefault();
-      const primaryContentContainer = document.getElementById(pageId);
-      primaryContentContainer && primaryContentContainer.focus();
-    }} href={`#${pageId}`}>
+    <SkipToContent
+      onClick={(event) => {
+        event.preventDefault();
+        const primaryContentContainer = document.getElementById(pageId);
+        primaryContentContainer && primaryContentContainer.focus();
+      }}
+      href={`#${pageId}`}
+    >
       Skip to Content
     </SkipToContent>
   );
@@ -105,7 +115,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       header={Header}
       sidebar={Sidebar}
       onPageResize={onPageResize}
-      skipToContent={PageSkipToContent}>
+      skipToContent={PageSkipToContent}
+    >
       {children}
     </Page>
   );
