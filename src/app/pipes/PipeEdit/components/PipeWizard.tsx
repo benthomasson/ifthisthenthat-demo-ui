@@ -1,14 +1,14 @@
 import React, { FunctionComponent, useContext } from 'react';
+import { StateFrom } from 'xstate';
+import { useSelector } from '@xstate/react';
 import { Wizard, WizardStep } from '@patternfly/react-core/next';
+import { PipeEditProps } from '@app/pipes/PipeEdit/PipeEdit';
+import { pipeMachineType } from '@app/pipes/PipeEdit/pipeMachine';
+import { PipeStateContext } from '@app/pipes/PipeEdit/PipeContextProvider';
 import SourceEdit from '@app/pipes/PipeEdit/components/SourceEdit';
 import ConditionEdit from '@app/pipes/PipeEdit/components/ConditionEdit';
 import WizardFinalStepFooter from '@app/pipes/PipeEdit/components/WizardFinalStepFooter';
 import ActionEdit from '@app/pipes/PipeEdit/components/ActionEdit';
-import { PipeEditProps } from '@app/pipes/PipeEdit/PipeEdit';
-import { StateFrom } from 'xstate';
-import { pipeMachineType } from '@app/pipes/PipeEdit/pipeMachine';
-import { PipeStateContext } from '@app/pipes/PipeEdit/PipeContextProvider';
-import { useSelector } from '@xstate/react';
 
 type PipeWizardProps = Pick<PipeEditProps, 'onCreate' | 'onCancel'>;
 const PipeWizard: FunctionComponent<PipeWizardProps> = (props) => {
@@ -20,6 +20,7 @@ const PipeWizard: FunctionComponent<PipeWizardProps> = (props) => {
   const isStepTwoInvalid = useSelector(pipeServices.pipeService, stepTwoInvalid);
   const isStepThreeInvalid = useSelector(pipeServices.pipeService, stepThreeInvalid);
   const stepOneStatus = isSubmitted && isStepOneInvalid ? 'error' : 'default';
+  const stepTwoStatus = isSubmitted && isStepTwoInvalid ? 'error' : 'default';
   const stepThreeStatus = isSubmitted && isStepThreeInvalid ? 'error' : 'default';
 
   const handleSubmit = () => {
@@ -29,11 +30,11 @@ const PipeWizard: FunctionComponent<PipeWizardProps> = (props) => {
   };
 
   return (
-    <Wizard height={'100%'} title="new pipe wizard" onClose={onCancel} onSave={handleSubmit}>
+    <Wizard height={'100%'} onClose={onCancel} onSave={handleSubmit}>
       <WizardStep name="Name and Source" id="first-step" status={stepOneStatus}>
         <SourceEdit />
       </WizardStep>
-      <WizardStep name="Condition (optional)" id="second-step">
+      <WizardStep name="Condition" id="second-step" status={stepTwoStatus}>
         <ConditionEdit />
       </WizardStep>
       <WizardStep

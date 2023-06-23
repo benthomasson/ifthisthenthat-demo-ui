@@ -20,6 +20,7 @@ interface PipeMachineContext {
   selectedCondition: {
     condition?: ConditionType;
     configuration?: object;
+    configurationValidator?: CreateValidator;
   };
   selectedActionSchema?: object;
   actionConfigValidator?: CreateValidator;
@@ -51,6 +52,8 @@ const pipeMachine = createMachine(
         | { type: 'isActionConfigValid' }
         | { type: 'isSourceConfigInvalid' }
         | { type: 'isSourceConfigValid' }
+        | { type: 'isConditionConfigInvalid' }
+        | { type: 'isConditionConfigValid' }
         | { type: 'submitForm' },
       services: {} as {
         fetchSourceTypes: {
@@ -192,32 +195,94 @@ const pipeMachine = createMachine(
         },
       },
       'step two': {
-        initial: 'isInvalid',
+        type: 'parallel',
         states: {
-          isInvalid: {
-            tags: 'stepTwoInvalid',
-          },
-          isValid: {},
-          fetchingConditions: {
-            invoke: {
-              id: 'getConditionTypes',
-              src: 'fetchConditionTypes',
-              onDone: {
-                actions: 'setConditionTypes',
-                target: 'isValid',
+          conditionType: {
+            initial: 'idle',
+            states: {
+              idle: {
+                tags: 'stepTwoInvalid',
+                on: {
+                  sourceTypeChange: {
+                    target: 'fetchingConditions',
+                  },
+                },
+              },
+              fetchingConditions: {
+                invoke: {
+                  id: 'getConditionTypes',
+                  src: 'fetchConditionTypes',
+                  onDone: {
+                    actions: 'setConditionTypes',
+                    target: 'validate',
+                  },
+                },
+              },
+              validate: {
+                always: [
+                  {
+                    cond: 'isConditionTypeValid',
+                    target: 'valid',
+                  },
+                  {
+                    target: 'invalid',
+                  },
+                ],
+              },
+              invalid: {
+                tags: ['conditionTypeInvalid', 'stepTwoInvalid'],
+              },
+              valid: {},
+            },
+            on: {
+              sourceTypeChange: {
+                target: '.fetchingConditions',
+              },
+              conditionTypeChange: {
+                actions: 'setSelectedCondition',
+                target: '.validate',
               },
             },
           },
-        },
-        on: {
-          sourceTypeChange: {
-            target: 'step two.fetchingConditions',
-          },
-          conditionTypeChange: {
-            actions: 'setSelectedCondition',
-          },
-          conditionConfigChange: {
-            actions: 'setSelectedConditionConfig',
+          conditionConfig: {
+            initial: 'idle',
+            states: {
+              idle: {
+                always: [{ target: 'validate', cond: 'isConditionTypeValid' }],
+              },
+              validate: {
+                invoke: {
+                  id: 'validateConditionConfig',
+                  src: (context) => (callback) => {
+                    const { condition, configuration, configurationValidator } =
+                      context.selectedCondition;
+                    const isConfigValid =
+                      condition &&
+                      configurationValidator &&
+                      validateAgainstSchema(
+                        configurationValidator,
+                        condition.schema,
+                        configuration ?? {}
+                      );
+                    callback(isConfigValid ? 'isConditionConfigValid' : 'isConditionConfigInvalid');
+                  },
+                },
+                on: {
+                  isConditionConfigValid: 'valid',
+                  isConditionConfigInvalid: 'invalid',
+                },
+              },
+              valid: {},
+              invalid: {
+                tags: ['stepTwoInvalid'],
+              },
+            },
+            on: {
+              conditionConfigChange: {
+                actions: 'setSelectedConditionConfig',
+                target: '.validate',
+              },
+            },
           },
         },
       },
@@ -367,7 +432,12 @@ const pipeMachine = createMachine(
       setSelectedCondition: assign((context, { conditionType }) => {
         return {
           selectedCondition: {
-            condition: conditionType,
+            ...(conditionType
+              ? {
+                  condition: conditionType,
+                  configurationValidator: createValidator(conditionType.schema),
+                }
+              : {}),
           },
         };
       }),
@@ -414,6 +484,7 @@ const pipeMachine = createMachine(
     guards: {
       isNameValid: ({ request }) => request.name.trim().length > 0,
       isSourceTypeValid: ({ request }) => request.source.source_type.trim().length > 0,
+      isConditionTypeValid: ({ selectedCondition }) => selectedCondition.condition !== undefined,
       isActionTypeValid: ({ request }) => request.action.name.trim().length > 0,
     },
   }

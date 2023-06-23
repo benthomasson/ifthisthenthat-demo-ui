@@ -54,6 +54,7 @@ export interface Typegen0 {
   };
   eventsCausingGuards: {
     isActionTypeValid: '';
+    isConditionTypeValid: '';
     isNameValid: '';
     isSourceTypeValid: '';
   };
@@ -86,9 +87,17 @@ export interface Typegen0 {
     | 'step three.actionType.valid'
     | 'step three.actionType.validate'
     | 'step two'
-    | 'step two.fetchingConditions'
-    | 'step two.isInvalid'
-    | 'step two.isValid'
+    | 'step two.conditionConfig'
+    | 'step two.conditionConfig.idle'
+    | 'step two.conditionConfig.invalid'
+    | 'step two.conditionConfig.valid'
+    | 'step two.conditionConfig.validate'
+    | 'step two.conditionType'
+    | 'step two.conditionType.fetchingConditions'
+    | 'step two.conditionType.idle'
+    | 'step two.conditionType.invalid'
+    | 'step two.conditionType.valid'
+    | 'step two.conditionType.validate'
     | 'wizard'
     | 'wizard.idle'
     | 'wizard.submitted'
@@ -109,12 +118,19 @@ export interface Typegen0 {
               actionConfig?: 'idle' | 'invalid' | 'valid' | 'validate';
               actionType?: 'fetchingActions' | 'invalid' | 'valid' | 'validate';
             };
-        'step two'?: 'fetchingConditions' | 'isInvalid' | 'isValid';
+        'step two'?:
+          | 'conditionConfig'
+          | 'conditionType'
+          | {
+              conditionConfig?: 'idle' | 'invalid' | 'valid' | 'validate';
+              conditionType?: 'fetchingConditions' | 'idle' | 'invalid' | 'valid' | 'validate';
+            };
         wizard?: 'idle' | 'submitted';
       };
   tags:
     | 'actionTypeInvalid'
     | 'actionTypeValid'
+    | 'conditionTypeInvalid'
     | 'nameInvalid'
     | 'nameValid'
     | 'sourceTypeInvalid'

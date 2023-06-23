@@ -1,58 +1,40 @@
-import React, { FunctionComponent, useContext, useRef } from 'react';
-import { Form, FormGroup, FormSelect, FormSelectOption } from '@patternfly/react-core';
+import React, { FunctionComponent, useContext, useEffect, useRef } from 'react';
+import { Form } from '@patternfly/react-core';
 import ConfigurationForm from '@app/components/ConfigurationForm/ConfigurationForm';
 import { PipeStateContext } from '@app/pipes/PipeEdit/PipeContextProvider';
 import { useSelector } from '@xstate/react';
+import ConditionTypeSelect from '@app/pipes/PipeEdit/components/ConditionTypeSelect';
+import { StateFrom } from 'xstate';
+import { pipeMachineType } from '@app/pipes/PipeEdit/pipeMachine';
+import ConditionPending from '@app/pipes/PipeEdit/components/ConditionPending';
 
 const ConditionEdit: FunctionComponent = () => {
   const pipeServices = useContext(PipeStateContext);
   const { send } = pipeServices.pipeService;
-
-  const conditionTypes = useSelector(
-    pipeServices.pipeService,
-    (state) => state.context.conditionTypes
-  );
 
   const selectedCondition = useSelector(
     pipeServices.pipeService,
     (state) => state.context.selectedCondition
   );
 
+  const isSubmitted = useSelector(pipeServices.pipeService, submissionSelector);
+  const isConditionIdle = useSelector(pipeServices.pipeService, idleConditionSelector);
+
   const validateConditionConfiguration = useRef<(() => boolean) | undefined>();
   const registerValidateConditionConfiguration = (callback: () => boolean): void => {
     validateConditionConfiguration.current = callback;
   };
-  const handleConditionChange = (name: string) => {
-    const conditionType = conditionTypes?.find((condition) => condition.name === name);
-    send('conditionTypeChange', { conditionType });
-  };
+
+  useEffect(() => {
+    if (isSubmitted) {
+      validateConditionConfiguration.current?.();
+    }
+  }, [isSubmitted]);
 
   return (
     <Form style={{ maxWidth: 700 }}>
-      <FormGroup
-        label="Condition Type"
-        fieldId="condition-type"
-        helperText={'Condition based on the selected source type'}
-      >
-        <FormSelect
-          value={selectedCondition.condition?.name ?? ''}
-          onChange={handleConditionChange}
-          id="condition-type"
-          name="condition-type"
-          aria-label="Condition Type"
-          isDisabled={conditionTypes === undefined}
-        >
-          <FormSelectOption
-            key={-1}
-            value={''}
-            label={conditionTypes ? 'Select one' : 'Select a Source Type first'}
-            isPlaceholder={true}
-          />
-          {conditionTypes?.map((option, index) => (
-            <FormSelectOption key={index} value={option.name} label={option.name} />
-          ))}
-        </FormSelect>
-      </FormGroup>
+      {isConditionIdle ? <ConditionPending /> : <ConditionTypeSelect />}
+
       {selectedCondition?.condition?.schema &&
         Object.keys(selectedCondition.condition.schema).length > 0 && (
           <ConfigurationForm
@@ -67,3 +49,11 @@ const ConditionEdit: FunctionComponent = () => {
 };
 
 export default ConditionEdit;
+
+const submissionSelector = (state: StateFrom<pipeMachineType>) => {
+  return state.hasTag('submitted');
+};
+
+const idleConditionSelector = (state: StateFrom<pipeMachineType>) => {
+  return state.matches('step two.conditionType.idle');
+};
