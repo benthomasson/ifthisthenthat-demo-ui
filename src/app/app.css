@@ -7,3 +7,7 @@ html, body, #root {
   --pf-c-content--blockquote--BorderLeftColor: purple; /* changes all <blockquote> left border color to purple */
   --pf-c-content--hr--BackgroundColor: lemonchiffon; /* changes a <hr> color to lemonchiffon */
 }
+
+.monospaced {
+  font-family: var(--pf-global--FontFamily--monospace);
+}

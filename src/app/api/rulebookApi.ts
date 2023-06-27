@@ -1,5 +1,13 @@
 import { apiClient } from '@app/api/apiClient';
-import { ActionType, ConditionType, Rule, Source, SourceType } from '@app/types';
+import {
+  ActionLog,
+  ActionType,
+  ConditionType,
+  EventLog,
+  Rule,
+  Source,
+  SourceType,
+} from '@app/types';
 export interface SourceResponse {
   sources: Source[];
 }
@@ -18,6 +26,18 @@ export interface AvailableConditionsResponse {
 
 export interface AvailableActionsResponse {
   actions: ActionType[];
+}
+
+export interface LogResponse {
+  log_lines: string[];
+}
+
+export interface EventLogResponse {
+  events: EventLog[];
+}
+
+export interface ActionLogResponse {
+  actions: ActionLog[];
 }
 
 const getSources = (): Promise<SourceResponse> =>
@@ -44,6 +64,15 @@ const createSource = (source: Source): Promise<SourceResponse> =>
 const getAvailableActions = (): Promise<AvailableActionsResponse> =>
   apiClient<AvailableActionsResponse>('available-actions').then((response) => response.data);
 
+const getLog = (): Promise<LogResponse> =>
+  apiClient<LogResponse>('log').then((response) => response.data);
+
+const getEventLog = (): Promise<EventLogResponse> =>
+  apiClient<EventLogResponse>('ansible-event-log').then((response) => response.data);
+
+const getActionLog = (): Promise<ActionLogResponse> =>
+  apiClient<ActionLogResponse>('action-log').then((response) => response.data);
+
 export {
   getSources,
   getRules,
@@ -51,4 +80,7 @@ export {
   createSource,
   getAvailableConditions,
   getAvailableActions,
+  getLog,
+  getEventLog,
+  getActionLog,
 };
