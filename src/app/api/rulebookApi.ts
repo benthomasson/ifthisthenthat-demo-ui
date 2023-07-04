@@ -4,17 +4,9 @@ import {
   ActionType,
   ConditionType,
   EventLog,
-  Rule,
-  Source,
+  Ruleset,
   SourceType,
 } from '@app/types';
-export interface SourceResponse {
-  sources: Source[];
-}
-
-export interface RulesResponse {
-  rules: Rule[];
-}
 
 export interface AvailableSourcesResponse {
   sources: SourceType[];
@@ -40,11 +32,9 @@ export interface ActionLogResponse {
   actions: ActionLog[];
 }
 
-const getSources = (): Promise<SourceResponse> =>
-  apiClient<SourceResponse>('sources').then((response) => response.data);
-
-const getRules = (): Promise<RulesResponse> =>
-  apiClient<RulesResponse>('rules').then((response) => response.data);
+export interface RulesetsResponse {
+  rulesets: Ruleset[];
+}
 
 const getAvailableSources = (): Promise<AvailableSourcesResponse> =>
   apiClient<AvailableSourcesResponse>('available-sources').then((response) => response.data);
@@ -54,12 +44,24 @@ const getAvailableConditions = (sourceTypeName: string): Promise<AvailableCondit
     (response) => response.data
   );
 
-const createSource = (source: Source): Promise<SourceResponse> =>
-  apiClient<SourceResponse>({
-    method: 'post',
-    url: 'sources',
-    data: source,
-  }).then((response) => response.data);
+const createRuleset = (
+  requestData: Ruleset,
+  onSuccess: () => void,
+  onError: (e: Error) => void
+): void => {
+  setTimeout(() => {
+    DEMO_RULESETS.push(requestData);
+    onSuccess();
+  }, Math.random() * 1000 + 2000);
+};
+
+const getRulesets = (): Promise<RulesetsResponse> => {
+  return new Promise<RulesetsResponse>((resolve) => {
+    setTimeout(() => {
+      resolve({ rulesets: DEMO_RULESETS });
+    }, 1000);
+  });
+};
 
 const getAvailableActions = (): Promise<AvailableActionsResponse> =>
   apiClient<AvailableActionsResponse>('available-actions').then((response) => response.data);
@@ -74,13 +76,14 @@ const getActionLog = (): Promise<ActionLogResponse> =>
   apiClient<ActionLogResponse>('action-log').then((response) => response.data);
 
 export {
-  getSources,
-  getRules,
   getAvailableSources,
-  createSource,
   getAvailableConditions,
   getAvailableActions,
+  createRuleset,
+  getRulesets,
   getLog,
   getEventLog,
   getActionLog,
 };
+
+const DEMO_RULESETS: Ruleset[] = [];

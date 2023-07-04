@@ -10,16 +10,25 @@ import {
   TextContent,
 } from '@patternfly/react-core';
 import { Link, useHistory } from 'react-router-dom';
-import PipeEdit from '@app/pipes/PipeEdit/PipeEdit';
+import PipeEdit, { PipeEditProps } from '@app/pipes/PipeEdit/PipeEdit';
 import {
   getAvailableActions,
   getAvailableConditions,
   getAvailableSources,
+  createRuleset,
 } from '@app/api/rulebookApi';
 
 const NewPipe: FunctionComponent = () => {
   const history = useHistory();
   const goToHome = () => history.push(`/`);
+
+  const handleCreateRuleset: PipeEditProps['createRuleset'] = (requestData, onSuccess, onError) => {
+    const handleSuccess = (): void => {
+      onSuccess();
+      goToHome();
+    };
+    createRuleset(requestData, handleSuccess, onError);
+  };
 
   return (
     <>
@@ -45,8 +54,8 @@ const NewPipe: FunctionComponent = () => {
           getSourceTypes={getAvailableSources}
           getConditionTypes={getAvailableConditions}
           getActionTypes={getAvailableActions}
+          createRuleset={handleCreateRuleset}
           onCancel={goToHome}
-          onCreate={() => alert('TO DO')}
         />
       </PageSection>
     </>

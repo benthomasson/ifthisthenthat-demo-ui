@@ -10,11 +10,11 @@ import ConditionEdit from '@app/pipes/PipeEdit/components/ConditionEdit';
 import WizardFinalStepFooter from '@app/pipes/PipeEdit/components/WizardFinalStepFooter';
 import ActionEdit from '@app/pipes/PipeEdit/components/ActionEdit';
 
-type PipeWizardProps = Pick<PipeEditProps, 'onCreate' | 'onCancel'>;
+type PipeWizardProps = Pick<PipeEditProps, 'onCancel'>;
 const PipeWizard: FunctionComponent<PipeWizardProps> = (props) => {
-  const { onCreate, onCancel } = props;
+  const { onCancel } = props;
   const pipeServices = useContext(PipeStateContext);
-
+  const { send } = pipeServices.pipeService;
   const isSubmitted = useSelector(pipeServices.pipeService, submissionSelector);
   const isStepOneInvalid = useSelector(pipeServices.pipeService, stepOneInvalid);
   const isStepTwoInvalid = useSelector(pipeServices.pipeService, stepTwoInvalid);
@@ -22,19 +22,23 @@ const PipeWizard: FunctionComponent<PipeWizardProps> = (props) => {
   const stepOneStatus = isSubmitted && isStepOneInvalid ? 'error' : 'default';
   const stepTwoStatus = isSubmitted && isStepTwoInvalid ? 'error' : 'default';
   const stepThreeStatus = isSubmitted && isStepThreeInvalid ? 'error' : 'default';
+  const isSaving = useSelector(pipeServices.pipeService, isSavingSelector);
 
   const handleSubmit = () => {
-    if (!(isStepOneInvalid || isStepTwoInvalid || isStepThreeInvalid)) {
-      onCreate();
-    }
+    send('submitForm');
   };
 
   return (
     <Wizard height={'100%'} onClose={onCancel} onSave={handleSubmit}>
-      <WizardStep name="Name and Source" id="first-step" status={stepOneStatus}>
+      <WizardStep
+        name="Name and Source"
+        id="first-step"
+        status={stepOneStatus}
+        isDisabled={isSaving}
+      >
         <SourceEdit />
       </WizardStep>
-      <WizardStep name="Condition" id="second-step" status={stepTwoStatus}>
+      <WizardStep name="Condition" id="second-step" status={stepTwoStatus} isDisabled={isSaving}>
         <ConditionEdit />
       </WizardStep>
       <WizardStep
@@ -65,4 +69,8 @@ const stepThreeInvalid = (state: StateFrom<pipeMachineType>) => {
 
 const submissionSelector = (state: StateFrom<pipeMachineType>) => {
   return state.hasTag('submitted');
+};
+
+const isSavingSelector = (state: StateFrom<pipeMachineType>) => {
+  return state.hasTag('saving');
 };

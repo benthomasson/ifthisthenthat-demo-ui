@@ -13,14 +13,6 @@ import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { StateFrom } from 'xstate';
 import { pipeMachineType } from '@app/pipes/PipeEdit/pipeMachine';
 
-const submissionSelector = (state: StateFrom<pipeMachineType>) => {
-  return state.hasTag('submitted');
-};
-
-const actionTypeInvalidSelector = (state: StateFrom<pipeMachineType>) => {
-  return state.hasTag('actionTypeInvalid');
-};
-
 const ActionEdit: FunctionComponent = () => {
   const pipeServices = useContext(PipeStateContext);
   const { send } = pipeServices.pipeService;
@@ -37,6 +29,8 @@ const ActionEdit: FunctionComponent = () => {
   );
 
   const isSubmitted = useSelector(pipeServices.pipeService, submissionSelector);
+  const isSaving = useSelector(pipeServices.pipeService, isSavingSelector);
+
   const isActionTypeInvalid = useSelector(pipeServices.pipeService, actionTypeInvalidSelector);
   const actionTypeValidation: FormGroupProps['validated'] =
     isSubmitted && isActionTypeInvalid ? 'error' : 'default';
@@ -68,7 +62,7 @@ const ActionEdit: FunctionComponent = () => {
           id="action-type"
           name="action-type"
           aria-label="Action Type"
-          isDisabled={actionTypes === undefined}
+          isDisabled={actionTypes === undefined || isSaving}
           validated={actionTypeValidation}
         >
           <FormSelectOption
@@ -90,6 +84,7 @@ const ActionEdit: FunctionComponent = () => {
             registerValidation={registerValidateActionConfiguration}
             schema={selectedActionSchema}
             configuration={selectedAction.module_args}
+            readOnly={isSaving}
           />
         )}
     </Form>
@@ -97,3 +92,15 @@ const ActionEdit: FunctionComponent = () => {
 };
 
 export default ActionEdit;
+
+const submissionSelector = (state: StateFrom<pipeMachineType>) => {
+  return state.hasTag('submitted');
+};
+
+const actionTypeInvalidSelector = (state: StateFrom<pipeMachineType>) => {
+  return state.hasTag('actionTypeInvalid');
+};
+
+const isSavingSelector = (state: StateFrom<pipeMachineType>) => {
+  return state.hasTag('saving');
+};
