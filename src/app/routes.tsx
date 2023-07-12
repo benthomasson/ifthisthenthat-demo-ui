@@ -6,6 +6,8 @@ import Rulebook from '@app/pages/Rulebook/Rulebook';
 import Log from '@app/pages/Log/Log';
 import NewPipe from '@app/pages/NewPipe/NewPipe';
 import { ErrorBoundaryFallback } from '@app/components/ErrorBoundaryFallBack/ErrorBoundaryFallback';
+import EventLog from '@app/pages/EventLog/EventLog';
+import ActionLog from '@app/pages/ActionLog/ActionLog';
 
 let routeFocusTimer: number;
 export interface IAppRoute {
@@ -43,6 +45,20 @@ const routes: AppRouteConfig[] = [
     path: '/rulebook/new-pipe',
     title: 'New Pipe | EDA',
     excludeFromSideNav: true,
+  },
+  {
+    component: EventLog,
+    exact: true,
+    label: 'Event Log',
+    path: '/event-log',
+    title: 'Event Log | EDA',
+  },
+  {
+    component: ActionLog,
+    exact: true,
+    label: 'Action Log',
+    path: '/action-log',
+    title: 'Action Log | EDA',
   },
   {
     component: Log,
