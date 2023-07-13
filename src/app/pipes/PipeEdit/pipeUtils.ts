@@ -17,11 +17,13 @@ export const prepareRulesetRequest = (
 
   return {
     name: requestData.name,
-    source: requestData.source,
-    rule: {
-      name: requestData.name + '_rule',
-      condition: { condition },
-      action: requestData.action,
-    },
+    sources: [requestData.source],
+    rules: [
+      {
+        name: requestData.name + '_rule',
+        condition: { condition },
+        action: requestData.action,
+      },
+    ],
   };
 };

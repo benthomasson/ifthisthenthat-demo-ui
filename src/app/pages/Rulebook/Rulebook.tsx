@@ -1,8 +1,19 @@
 import React, { FunctionComponent } from 'react';
-import { PageSection, PageSectionVariants, TextContent, Text, Card } from '@patternfly/react-core';
+import {
+  PageSection,
+  PageSectionVariants,
+  TextContent,
+  Text,
+  Card,
+  Button,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+} from '@patternfly/react-core';
 import PipeList from '@app/pipes/PipeList/PipeList';
 import { useQuery } from '@tanstack/react-query';
 import { getRulesets } from '@app/api/rulebookApi';
+import { Link } from 'react-router-dom';
 
 const Rulebook: FunctionComponent = () => {
   const { data } = useQuery({
@@ -10,6 +21,18 @@ const Rulebook: FunctionComponent = () => {
     queryFn: getRulesets,
     refetchInterval: 4000,
   });
+
+  const toolbar = (
+    <Toolbar id="pipes-toolbar">
+      <ToolbarContent>
+        <ToolbarItem>
+          <Link to={`${location.pathname}/new-pipe`}>
+            <Button variant="primary">New Pipe</Button>
+          </Link>
+        </ToolbarItem>
+      </ToolbarContent>
+    </Toolbar>
+  );
 
   return (
     <>
@@ -20,7 +43,7 @@ const Rulebook: FunctionComponent = () => {
       </PageSection>
       <PageSection>
         <Card>
-          <PipeList pipes={data?.rulesets ?? []} />
+          <PipeList pipes={data?.rulesets ?? []} toolbar={toolbar} />
         </Card>
       </PageSection>
     </>

@@ -1,12 +1,5 @@
 import { apiClient } from '@app/api/apiClient';
-import {
-  ActionLog,
-  ActionType,
-  ConditionType,
-  EventLog,
-  Ruleset,
-  SourceType,
-} from '@app/types';
+import { ActionLog, ActionType, ConditionType, EventLog, Ruleset, SourceType } from '@app/types';
 
 export interface AvailableSourcesResponse {
   sources: SourceType[];
@@ -49,19 +42,13 @@ const createRuleset = (
   onSuccess: () => void,
   onError: (e: Error) => void
 ): void => {
-  setTimeout(() => {
-    DEMO_RULESETS.push(requestData);
-    onSuccess();
-  }, Math.random() * 1000 + 2000);
+  apiClient({ method: 'post', url: 'ruleset', data: requestData })
+    .then(() => onSuccess())
+    .catch((e) => onError(e));
 };
 
-const getRulesets = (): Promise<RulesetsResponse> => {
-  return new Promise<RulesetsResponse>((resolve) => {
-    setTimeout(() => {
-      resolve({ rulesets: DEMO_RULESETS });
-    }, 1000);
-  });
-};
+const getRulesets = (): Promise<RulesetsResponse> =>
+  apiClient<RulesetsResponse>('rulesets').then((response) => response.data);
 
 const getAvailableActions = (): Promise<AvailableActionsResponse> =>
   apiClient<AvailableActionsResponse>('available-actions').then((response) => response.data);
@@ -85,5 +72,3 @@ export {
   getEventLog,
   getActionLog,
 };
-
-const DEMO_RULESETS: Ruleset[] = [];

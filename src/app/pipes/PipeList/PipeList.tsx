@@ -7,9 +7,10 @@ import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-tab
 
 interface PipeListProps {
   pipes: Ruleset[];
+  toolbar?: React.ReactNode;
 }
 const PipeList: FunctionComponent<PipeListProps> = (props) => {
-  const { pipes } = props;
+  const { pipes, toolbar } = props;
 
   const columnNames = {
     name: 'Name',
@@ -37,24 +38,27 @@ const PipeList: FunctionComponent<PipeListProps> = (props) => {
         </EmptyState>
       )}
       {pipes.length > 0 && (
-        <TableComposable aria-label="pipes">
-          <Thead>
-            <Tr>
-              <Th>{columnNames.name}</Th>
-              <Th>{columnNames.source}</Th>
-              <Th>{columnNames.action}</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {pipes.map((row, index) => (
-              <Tr key={`${row.name}-${index}`}>
-                <Td dataLabel={columnNames.name}>{row.name}</Td>
-                <Td dataLabel={columnNames.source}>{row.source.source_type}</Td>
-                <Td dataLabel={columnNames.action}>{row.rule.action.name}</Td>
+        <>
+          {toolbar}
+          <TableComposable aria-label="pipes">
+            <Thead>
+              <Tr>
+                <Th>{columnNames.name}</Th>
+                <Th>{columnNames.source}</Th>
+                <Th>{columnNames.action}</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </TableComposable>
+            </Thead>
+            <Tbody>
+              {pipes.map((row, index) => (
+                <Tr key={`${row.name}-${index}`}>
+                  <Td dataLabel={columnNames.name}>{row.name}</Td>
+                  <Td dataLabel={columnNames.source}>{row.sources[0]?.source_type}</Td>
+                  <Td dataLabel={columnNames.action}>{row.rules[0]?.action.name}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </TableComposable>
+        </>
       )}
     </>
   );

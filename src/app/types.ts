@@ -36,8 +36,8 @@ export interface ActionType {
 
 export interface Ruleset {
   name: string;
-  source: Source;
-  rule: Rule;
+  sources: Source[];
+  rules: Rule[];
 }
 
 export interface EventLog {
