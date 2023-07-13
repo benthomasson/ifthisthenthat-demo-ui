@@ -19,19 +19,26 @@ export interface Typegen0 {
       data: unknown;
       __tip: 'See the XState TS docs to learn how to strongly type this.';
     };
+    'done.invoke.saveRuleset': {
+      type: 'done.invoke.saveRuleset';
+      data: unknown;
+      __tip: 'See the XState TS docs to learn how to strongly type this.';
+    };
     'error.platform.getActionTypes': { type: 'error.platform.getActionTypes'; data: unknown };
     'error.platform.getConditionTypes': { type: 'error.platform.getConditionTypes'; data: unknown };
     'error.platform.getSourceTypes': { type: 'error.platform.getSourceTypes'; data: unknown };
+    'error.platform.saveRuleset': { type: 'error.platform.saveRuleset'; data: unknown };
     'xstate.init': { type: 'xstate.init' };
   };
   invokeSrcNameMap: {
+    createRuleset: 'done.invoke.saveRuleset';
     fetchActionTypes: 'done.invoke.getActionTypes';
     fetchConditionTypes: 'done.invoke.getConditionTypes';
     fetchSourceTypes: 'done.invoke.getSourceTypes';
   };
   missingImplementations: {
     actions: never;
-    services: 'fetchSourceTypes' | 'fetchConditionTypes' | 'fetchActionTypes';
+    services: 'fetchSourceTypes' | 'fetchConditionTypes' | 'fetchActionTypes' | 'createRuleset';
     guards: never;
     delays: never;
   };
@@ -48,6 +55,7 @@ export interface Typegen0 {
     setSourceTypes: 'done.invoke.getSourceTypes';
   };
   eventsCausingServices: {
+    createRuleset: 'submitForm';
     fetchActionTypes: 'xstate.init';
     fetchConditionTypes: 'sourceTypeChange';
     fetchSourceTypes: 'xstate.init';
@@ -55,6 +63,7 @@ export interface Typegen0 {
   eventsCausingGuards: {
     isActionTypeValid: '';
     isConditionTypeValid: '';
+    isFormValid: 'submitForm';
     isNameValid: '';
     isSourceTypeValid: '';
   };
@@ -100,6 +109,8 @@ export interface Typegen0 {
     | 'step two.conditionType.validate'
     | 'wizard'
     | 'wizard.idle'
+    | 'wizard.saved'
+    | 'wizard.saving'
     | 'wizard.submitted'
     | {
         'step one'?:
@@ -125,7 +136,7 @@ export interface Typegen0 {
               conditionConfig?: 'idle' | 'invalid' | 'valid' | 'validate';
               conditionType?: 'fetchingConditions' | 'idle' | 'invalid' | 'valid' | 'validate';
             };
-        wizard?: 'idle' | 'submitted';
+        wizard?: 'idle' | 'saved' | 'saving' | 'submitted';
       };
   tags:
     | 'actionTypeInvalid'
@@ -133,6 +144,7 @@ export interface Typegen0 {
     | 'conditionTypeInvalid'
     | 'nameInvalid'
     | 'nameValid'
+    | 'saving'
     | 'sourceTypeInvalid'
     | 'sourceTypeValid'
     | 'stepOneInvalid'

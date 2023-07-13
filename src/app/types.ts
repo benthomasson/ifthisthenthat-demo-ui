@@ -34,6 +34,12 @@ export interface ActionType {
   schema: object;
 }
 
+export interface Ruleset {
+  name: string;
+  sources: Source[];
+  rules: Rule[];
+}
+
 export interface EventLog {
   type: string;
   event: {

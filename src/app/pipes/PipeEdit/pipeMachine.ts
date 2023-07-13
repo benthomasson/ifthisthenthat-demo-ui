@@ -1,5 +1,5 @@
 import { assign, createMachine } from 'xstate';
-import { Action, ActionType, Condition, ConditionType, Source, SourceType } from '@app/types';
+import { Action, ActionType, ConditionType, Source, SourceType } from '@app/types';
 import {
   AvailableActionsResponse,
   AvailableConditionsResponse,
@@ -11,7 +11,7 @@ import {
   validateAgainstSchema,
 } from '@app/components/ConfigurationForm/validator';
 
-interface PipeMachineContext {
+export interface PipeMachineContext {
   sourceTypes: SourceType[];
   conditionTypes?: ConditionType[];
   actionTypes: ActionType[];
@@ -27,7 +27,6 @@ interface PipeMachineContext {
   request: {
     name: string;
     source: Source;
-    condition?: Condition;
     action: Action;
   };
 }
@@ -54,6 +53,7 @@ const pipeMachine = createMachine(
         | { type: 'isSourceConfigValid' }
         | { type: 'isConditionConfigInvalid' }
         | { type: 'isConditionConfigValid' }
+        | { type: 'createSuccess' }
         | { type: 'submitForm' },
       services: {} as {
         fetchSourceTypes: {
@@ -65,6 +65,7 @@ const pipeMachine = createMachine(
         fetchActionTypes: {
           data: AvailableActionsResponse;
         };
+        createRuleset;
       },
     },
     context: {
@@ -372,11 +373,40 @@ const pipeMachine = createMachine(
         states: {
           idle: {
             on: {
-              submitForm: 'submitted',
+              submitForm: [
+                {
+                  target: 'saving',
+                  cond: 'isFormValid',
+                },
+                {
+                  target: 'submitted',
+                },
+              ],
             },
           },
           submitted: {
             tags: 'submitted',
+            on: {
+              submitForm: {
+                target: 'saving',
+                cond: 'isFormValid',
+              },
+            },
+          },
+          saving: {
+            tags: 'saving',
+            invoke: {
+              id: 'saveRuleset',
+              src: 'createRuleset',
+            },
+            on: {
+              createSuccess: {
+                target: 'saved',
+              },
+            },
+          },
+          saved: {
+            type: 'final',
           },
         },
       },
@@ -486,6 +516,13 @@ const pipeMachine = createMachine(
       isSourceTypeValid: ({ request }) => request.source.source_type.trim().length > 0,
       isConditionTypeValid: ({ selectedCondition }) => selectedCondition.condition !== undefined,
       isActionTypeValid: ({ request }) => request.action.name.trim().length > 0,
+      isFormValid: (_context, _event, { state }) => {
+        return !(
+          state.hasTag('stepOneInvalid') ||
+          state.hasTag('stepTwoInvalid') ||
+          state.hasTag('stepThreeInvalid')
+        );
+      },
     },
   }
 );

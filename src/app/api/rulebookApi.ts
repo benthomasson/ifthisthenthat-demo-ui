@@ -1,20 +1,5 @@
 import { apiClient } from '@app/api/apiClient';
-import {
-  ActionLog,
-  ActionType,
-  ConditionType,
-  EventLog,
-  Rule,
-  Source,
-  SourceType,
-} from '@app/types';
-export interface SourceResponse {
-  sources: Source[];
-}
-
-export interface RulesResponse {
-  rules: Rule[];
-}
+import { ActionLog, ActionType, ConditionType, EventLog, Ruleset, SourceType } from '@app/types';
 
 export interface AvailableSourcesResponse {
   sources: SourceType[];
@@ -40,11 +25,9 @@ export interface ActionLogResponse {
   actions: ActionLog[];
 }
 
-const getSources = (): Promise<SourceResponse> =>
-  apiClient<SourceResponse>('sources').then((response) => response.data);
-
-const getRules = (): Promise<RulesResponse> =>
-  apiClient<RulesResponse>('rules').then((response) => response.data);
+export interface RulesetsResponse {
+  rulesets: Ruleset[];
+}
 
 const getAvailableSources = (): Promise<AvailableSourcesResponse> =>
   apiClient<AvailableSourcesResponse>('available-sources').then((response) => response.data);
@@ -54,12 +37,18 @@ const getAvailableConditions = (sourceTypeName: string): Promise<AvailableCondit
     (response) => response.data
   );
 
-const createSource = (source: Source): Promise<SourceResponse> =>
-  apiClient<SourceResponse>({
-    method: 'post',
-    url: 'sources',
-    data: source,
-  }).then((response) => response.data);
+const createRuleset = (
+  requestData: Ruleset,
+  onSuccess: () => void,
+  onError: (e: Error) => void
+): void => {
+  apiClient({ method: 'post', url: 'ruleset', data: requestData })
+    .then(() => onSuccess())
+    .catch((e) => onError(e));
+};
+
+const getRulesets = (): Promise<RulesetsResponse> =>
+  apiClient<RulesetsResponse>('rulesets').then((response) => response.data);
 
 const getAvailableActions = (): Promise<AvailableActionsResponse> =>
   apiClient<AvailableActionsResponse>('available-actions').then((response) => response.data);
@@ -74,12 +63,11 @@ const getActionLog = (): Promise<ActionLogResponse> =>
   apiClient<ActionLogResponse>('action-log').then((response) => response.data);
 
 export {
-  getSources,
-  getRules,
   getAvailableSources,
-  createSource,
   getAvailableConditions,
   getAvailableActions,
+  createRuleset,
+  getRulesets,
   getLog,
   getEventLog,
   getActionLog,
