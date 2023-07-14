@@ -1,32 +1,32 @@
 import React, { FunctionComponent } from 'react';
-import { PipeStateProvider } from '@app/pipes/PipeEdit/PipeContextProvider';
+import { RulesetStateProvider } from '@app/rulesets/RulesetEdit/RulesetContextProvider';
 import {
   AvailableActionsResponse,
   AvailableConditionsResponse,
   AvailableSourcesResponse,
 } from '@app/api/rulebookApi';
-import PipeWizard from '@app/pipes/PipeEdit/components/PipeWizard';
+import RulesetWizard from '@app/rulesets/RulesetEdit/components/RulesetWizard';
 import { Ruleset } from '@app/types';
 
-export interface PipeEditProps {
+export interface RulesetEditProps {
   getSourceTypes: () => Promise<AvailableSourcesResponse>;
   getConditionTypes: (sourceType: string) => Promise<AvailableConditionsResponse>;
   getActionTypes: () => Promise<AvailableActionsResponse>;
   createRuleset: (data: Ruleset, onSuccess: () => void, onError: (e: Error) => void) => void;
   onCancel: () => void;
 }
-const PipeEdit: FunctionComponent<PipeEditProps> = (props) => {
+const RulesetEdit: FunctionComponent<RulesetEditProps> = (props) => {
   const { getSourceTypes, getConditionTypes, getActionTypes, createRuleset, onCancel } = props;
   return (
-    <PipeStateProvider
+    <RulesetStateProvider
       getSourceTypes={getSourceTypes}
       getConditionTypes={getConditionTypes}
       getActionTypes={getActionTypes}
       createRuleset={createRuleset}
     >
-      <PipeWizard onCancel={onCancel} />
-    </PipeStateProvider>
+      <RulesetWizard onCancel={onCancel} />
+    </RulesetStateProvider>
   );
 };
 
-export default PipeEdit;
+export default RulesetEdit;

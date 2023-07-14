@@ -38,9 +38,9 @@ export interface Typegen0 {
   };
   missingImplementations: {
     actions: never;
-    services: 'fetchSourceTypes' | 'fetchConditionTypes' | 'fetchActionTypes' | 'createRuleset';
-    guards: never;
     delays: never;
+    guards: never;
+    services: 'createRuleset' | 'fetchActionTypes' | 'fetchConditionTypes' | 'fetchSourceTypes';
   };
   eventsCausingActions: {
     setActionConfig: 'actionConfigChange';
@@ -54,12 +54,7 @@ export interface Typegen0 {
     setSourceType: 'sourceTypeChange';
     setSourceTypes: 'done.invoke.getSourceTypes';
   };
-  eventsCausingServices: {
-    createRuleset: 'submitForm';
-    fetchActionTypes: 'xstate.init';
-    fetchConditionTypes: 'sourceTypeChange';
-    fetchSourceTypes: 'xstate.init';
-  };
+  eventsCausingDelays: {};
   eventsCausingGuards: {
     isActionTypeValid: '';
     isConditionTypeValid: '';
@@ -67,7 +62,15 @@ export interface Typegen0 {
     isNameValid: '';
     isSourceTypeValid: '';
   };
-  eventsCausingDelays: {};
+  eventsCausingServices: {
+    createRuleset: 'submitForm';
+    fetchActionTypes: 'xstate.init';
+    fetchConditionTypes: 'sourceTypeChange';
+    fetchSourceTypes: 'xstate.init';
+    validateActionConfig: '' | 'actionConfigChange';
+    validateConditionConfig: '' | 'conditionConfigChange';
+    validateSourceConfig: '' | 'sourceConfigChange';
+  };
   matchesStates:
     | 'step one'
     | 'step one.name'

@@ -11,7 +11,7 @@ import {
   validateAgainstSchema,
 } from '@app/components/ConfigurationForm/validator';
 
-export interface PipeMachineContext {
+export interface RulesetMachineContext {
   sourceTypes: SourceType[];
   conditionTypes?: ConditionType[];
   actionTypes: ActionType[];
@@ -31,14 +31,14 @@ export interface PipeMachineContext {
   };
 }
 
-const pipeMachine = createMachine(
+const rulesetMachine = createMachine(
   {
-    id: 'pipeMachine',
+    id: 'rulesetMachine',
     preserveActionOrder: true,
     predictableActionArguments: true,
-    tsTypes: {} as import('./pipeMachine.typegen').Typegen0,
+    tsTypes: {} as import('./rulesetMachine.typegen').Typegen0,
     schema: {
-      context: {} as PipeMachineContext,
+      context: {} as RulesetMachineContext,
       events: {} as
         | { type: 'nameChange'; name: string }
         | { type: 'sourceTypeChange'; sourceType: string }
@@ -123,7 +123,7 @@ const pipeMachine = createMachine(
             on: {
               sourceTypeChange: {
                 actions: 'setSourceType',
-                target: ['.validate', '#pipeMachine.wizard.idle'],
+                target: ['.validate', '#rulesetMachine.wizard.idle'],
               },
             },
           },
@@ -324,7 +324,7 @@ const pipeMachine = createMachine(
             on: {
               actionTypeChange: {
                 actions: 'setActionType',
-                target: ['.validate', '#pipeMachine.wizard.idle'],
+                target: ['.validate', '#rulesetMachine.wizard.idle'],
               },
             },
           },
@@ -527,9 +527,9 @@ const pipeMachine = createMachine(
   }
 );
 
-type pipeMachineType = typeof pipeMachine;
+type rulesetMachineType = typeof rulesetMachine;
 
-export { pipeMachine, pipeMachineType };
+export { rulesetMachine, rulesetMachineType };
 
 const ACTION_SCHEMA_DEMO = {
   type: 'object',

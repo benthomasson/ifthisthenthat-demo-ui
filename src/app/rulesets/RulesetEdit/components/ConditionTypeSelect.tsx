@@ -1,29 +1,29 @@
 import React, { FunctionComponent, useContext, useRef, useState } from 'react';
 import { FormGroup, FormGroupProps, Select, SelectOption } from '@patternfly/react-core';
 import { SelectVariant } from '@patternfly/react-core';
-import { PipeStateContext } from '@app/pipes/PipeEdit/PipeContextProvider';
+import { RulesetStateContext } from '@app/rulesets/RulesetEdit/RulesetContextProvider';
 import { useSelector } from '@xstate/react';
 import { StateFrom } from 'xstate';
-import { pipeMachineType } from '@app/pipes/PipeEdit/pipeMachine';
+import { rulesetMachineType } from '@app/rulesets/RulesetEdit/rulesetMachine';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
 const ConditionTypeSelect: FunctionComponent = () => {
-  const pipeServices = useContext(PipeStateContext);
-  const { send } = pipeServices.pipeService;
+  const rulesetServices = useContext(RulesetStateContext);
+  const { send } = rulesetServices.rulesetService;
 
   const conditionTypes = useSelector(
-    pipeServices.pipeService,
+    rulesetServices.rulesetService,
     (state) => state.context.conditionTypes
   );
 
   const selectedCondition = useSelector(
-    pipeServices.pipeService,
+    rulesetServices.rulesetService,
     (state) => state.context.selectedCondition
   );
 
-  const isSubmitted = useSelector(pipeServices.pipeService, submissionSelector);
+  const isSubmitted = useSelector(rulesetServices.rulesetService, submissionSelector);
   const isConditionTypeInvalid = useSelector(
-    pipeServices.pipeService,
+    rulesetServices.rulesetService,
     conditionTypeInvalidSelector
   );
   const conditionTypeValidation: FormGroupProps['validated'] =
@@ -81,9 +81,9 @@ const ConditionTypeSelect: FunctionComponent = () => {
 
 export default ConditionTypeSelect;
 
-const conditionTypeInvalidSelector = (state: StateFrom<pipeMachineType>) => {
+const conditionTypeInvalidSelector = (state: StateFrom<rulesetMachineType>) => {
   return state.hasTag('conditionTypeInvalid');
 };
-const submissionSelector = (state: StateFrom<pipeMachineType>) => {
+const submissionSelector = (state: StateFrom<rulesetMachineType>) => {
   return state.hasTag('submitted');
 };

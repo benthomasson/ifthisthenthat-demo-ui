@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch, useLocation } from 'react-router-dom';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { NotFound } from '@app/pages/NotFound/NotFound';
-import Rulebook from '@app/pages/Rulebook/Rulebook';
+import Rulesets from '@app/pages/Rulesets/Rulesets';
 import Log from '@app/pages/Log/Log';
-import NewPipe from '@app/pages/NewPipe/NewPipe';
+import NewRuleset from '@app/pages/NewRuleset/NewRuleset';
 import { ErrorBoundaryFallback } from '@app/components/ErrorBoundaryFallBack/ErrorBoundaryFallback';
 import EventLog from '@app/pages/EventLog/EventLog';
 import ActionLog from '@app/pages/ActionLog/ActionLog';
@@ -32,18 +32,18 @@ export type AppRouteConfig = IAppRoute | IAppRouteGroup;
 
 const routes: AppRouteConfig[] = [
   {
-    component: Rulebook,
+    component: Rulesets,
     exact: true,
-    label: 'Rulebook',
-    path: '/rulebook',
-    title: 'Rulebook | EDA',
+    label: 'Rule sets',
+    path: '/rulesets',
+    title: 'Rule sets | EDA',
   },
   {
-    component: NewPipe,
+    component: NewRuleset,
     exact: true,
-    label: 'New Pipe',
-    path: '/rulebook/new-pipe',
-    title: 'New Pipe | EDA',
+    label: 'Create rule set',
+    path: '/rulesets/create-ruleset',
+    title: 'Create rule set | EDA',
     excludeFromSideNav: true,
   },
   {
@@ -113,7 +113,7 @@ const AppRoutes = (): React.ReactElement => (
   <ErrorBoundaryFallback>
     <Switch>
       <Route path={'/'} exact>
-        <Redirect to="/rulebook" />
+        <Redirect to="/rulesets" />
       </Route>
       {flattenedRoutes.map(({ path, exact, component, title }, idx) => (
         <RouteWithTitleUpdates

@@ -1,24 +1,24 @@
 import React, { FunctionComponent, useContext, useEffect, useRef } from 'react';
 import { Form } from '@patternfly/react-core';
 import ConfigurationForm from '@app/components/ConfigurationForm/ConfigurationForm';
-import { PipeStateContext } from '@app/pipes/PipeEdit/PipeContextProvider';
+import { RulesetStateContext } from '@app/rulesets/RulesetEdit/RulesetContextProvider';
 import { useSelector } from '@xstate/react';
-import ConditionTypeSelect from '@app/pipes/PipeEdit/components/ConditionTypeSelect';
+import ConditionTypeSelect from '@app/rulesets/RulesetEdit/components/ConditionTypeSelect';
 import { StateFrom } from 'xstate';
-import { pipeMachineType } from '@app/pipes/PipeEdit/pipeMachine';
-import ConditionPending from '@app/pipes/PipeEdit/components/ConditionPending';
+import { rulesetMachineType } from '@app/rulesets/RulesetEdit/rulesetMachine';
+import ConditionPending from '@app/rulesets/RulesetEdit/components/ConditionPending';
 
 const ConditionEdit: FunctionComponent = () => {
-  const pipeServices = useContext(PipeStateContext);
-  const { send } = pipeServices.pipeService;
+  const rulesetServices = useContext(RulesetStateContext);
+  const { send } = rulesetServices.rulesetService;
 
   const selectedCondition = useSelector(
-    pipeServices.pipeService,
+    rulesetServices.rulesetService,
     (state) => state.context.selectedCondition
   );
 
-  const isSubmitted = useSelector(pipeServices.pipeService, submissionSelector);
-  const isConditionIdle = useSelector(pipeServices.pipeService, idleConditionSelector);
+  const isSubmitted = useSelector(rulesetServices.rulesetService, submissionSelector);
+  const isConditionIdle = useSelector(rulesetServices.rulesetService, idleConditionSelector);
 
   const validateConditionConfiguration = useRef<(() => boolean) | undefined>();
   const registerValidateConditionConfiguration = (callback: () => boolean): void => {
@@ -50,10 +50,10 @@ const ConditionEdit: FunctionComponent = () => {
 
 export default ConditionEdit;
 
-const submissionSelector = (state: StateFrom<pipeMachineType>) => {
+const submissionSelector = (state: StateFrom<rulesetMachineType>) => {
   return state.hasTag('submitted');
 };
 
-const idleConditionSelector = (state: StateFrom<pipeMachineType>) => {
+const idleConditionSelector = (state: StateFrom<rulesetMachineType>) => {
   return state.matches('step two.conditionType.idle');
 };
