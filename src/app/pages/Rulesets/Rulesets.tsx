@@ -23,11 +23,11 @@ const Rulesets: FunctionComponent = () => {
   });
 
   const toolbar = (
-    <Toolbar id="rulesets-toolbar">
+    <Toolbar id="reactions-toolbar">
       <ToolbarContent>
         <ToolbarItem>
-          <Link to={`${location.pathname}/create-ruleset`}>
-            <Button variant="primary">Create rule set</Button>
+          <Link to={`${location.pathname}/create-reaction`}>
+            <Button variant="primary">Create reaction</Button>
           </Link>
         </ToolbarItem>
       </ToolbarContent>
@@ -38,7 +38,7 @@ const Rulesets: FunctionComponent = () => {
     <>
       <PageSection variant={PageSectionVariants.light}>
         <TextContent>
-          <Text component="h1">Rule sets</Text>
+          <Text component="h1">Reactions</Text>
         </TextContent>
       </PageSection>
       <PageSection>

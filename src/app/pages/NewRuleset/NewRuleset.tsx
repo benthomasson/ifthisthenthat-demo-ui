@@ -41,16 +41,16 @@ const NewRuleset: FunctionComponent = () => {
           <BreadcrumbItem
             render={({ className }): React.ReactNode => (
               <Link to={'/'} className={className}>
-                Rule sets
+                Reactions
               </Link>
             )}
           />
-          <BreadcrumbItem isActive>Create rule set</BreadcrumbItem>
+          <BreadcrumbItem isActive>Create reaction</BreadcrumbItem>
         </Breadcrumb>
       </PageBreadcrumb>
       <PageSection variant={PageSectionVariants.light} isWidthLimited>
         <TextContent>
-          <Text component="h1">Create rule set</Text>
+          <Text component="h1">Create reaction</Text>
         </TextContent>
       </PageSection>
       <PageSection type={PageSectionTypes.wizard} isWidthLimited>

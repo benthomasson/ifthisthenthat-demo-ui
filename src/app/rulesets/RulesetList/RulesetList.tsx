@@ -24,15 +24,15 @@ const RulesetList: FunctionComponent<RulesetListProps> = (props) => {
         <EmptyState>
           <EmptyStateIcon icon={DataSourceIcon} />
           <Title headingLevel="h1" size="lg">
-            No Rule Sets Yet
+            No Reactions Yet
           </Title>
           <EmptyStateBody>
-            With a rule set you can retrieve events from a Source and trigger an Action
+            With a reaction you can retrieve events from a Source and trigger an Action
             <br /> when a certain Condition applies.
           </EmptyStateBody>
           <EmptyStateBody>
-            <Link to={`${location.pathname}/create-ruleset`}>
-              <Button variant="primary">Create rule set</Button>
+            <Link to={`${location.pathname}/create-reaction`}>
+              <Button variant="primary">Create reaction</Button>
             </Link>
           </EmptyStateBody>
         </EmptyState>
@@ -40,7 +40,7 @@ const RulesetList: FunctionComponent<RulesetListProps> = (props) => {
       {rulesets.length > 0 && (
         <>
           {toolbar}
-          <TableComposable aria-label="Rule sets">
+          <TableComposable aria-label="Reactions">
             <Thead>
               <Tr>
                 <Th>{columnNames.name}</Th>
