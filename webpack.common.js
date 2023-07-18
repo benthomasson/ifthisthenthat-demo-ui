@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const BG_IMAGES_DIRNAME = 'bgimages';
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 module.exports = (env) => {
@@ -30,7 +31,10 @@ module.exports = (env) => {
           include: [
             path.resolve(__dirname, 'node_modules/patternfly/dist/fonts'),
             path.resolve(__dirname, 'node_modules/@patternfly/react-core/dist/styles/assets/fonts'),
-            path.resolve(__dirname, 'node_modules/@patternfly/react-core/dist/styles/assets/pficon'),
+            path.resolve(
+              __dirname,
+              'node_modules/@patternfly/react-core/dist/styles/assets/pficon'
+            ),
             path.resolve(__dirname, 'node_modules/@patternfly/patternfly/assets/fonts'),
             path.resolve(__dirname, 'node_modules/@patternfly/patternfly/assets/pficon'),
           ],
@@ -89,7 +93,10 @@ module.exports = (env) => {
             path.resolve(__dirname, 'node_modules/patternfly'),
             path.resolve(__dirname, 'node_modules/@patternfly/patternfly/assets/images'),
             path.resolve(__dirname, 'node_modules/@patternfly/react-styles/css/assets/images'),
-            path.resolve(__dirname, 'node_modules/@patternfly/react-core/dist/styles/assets/images'),
+            path.resolve(
+              __dirname,
+              'node_modules/@patternfly/react-core/dist/styles/assets/images'
+            ),
             path.resolve(
               __dirname,
               'node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css/assets/images'
@@ -114,6 +121,15 @@ module.exports = (env) => {
             },
           ],
         },
+        {
+          test: /\.css$/,
+          include: [path.resolve(__dirname, 'node_modules/monaco-editor')],
+          use: ['style-loader', 'css-loader'],
+        },
+        {
+          test: /\.ttf$/,
+          type: 'asset/resource',
+        },
       ],
     },
     output: {
@@ -131,6 +147,19 @@ module.exports = (env) => {
       }),
       new CopyPlugin({
         patterns: [{ from: './src/favicon.png', to: 'images' }],
+      }),
+      new MonacoWebpackPlugin({
+        languages: ['yaml'],
+        customLanguages: [
+          {
+            label: 'yaml',
+            entry: 'monaco-yaml',
+            worker: {
+              id: 'monaco-yaml/yamlWorker',
+              entry: 'monaco-yaml/yaml.worker',
+            },
+          },
+        ],
       }),
     ],
     resolve: {

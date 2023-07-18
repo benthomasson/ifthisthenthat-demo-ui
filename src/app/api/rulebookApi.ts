@@ -1,5 +1,6 @@
 import { apiClient } from '@app/api/apiClient';
 import { ActionLog, ActionType, ConditionType, EventLog, Ruleset, SourceType } from '@app/types';
+import { Response } from 'redaxios';
 
 export interface AvailableSourcesResponse {
   sources: SourceType[];
@@ -27,6 +28,10 @@ export interface ActionLogResponse {
 
 export interface RulesetsResponse {
   rulesets: Ruleset[];
+}
+
+export interface InventoryResponse {
+  inventory: string;
 }
 
 const getAvailableSources = (): Promise<AvailableSourcesResponse> =>
@@ -62,6 +67,29 @@ const getEventLog = (): Promise<EventLogResponse> =>
 const getActionLog = (): Promise<ActionLogResponse> =>
   apiClient<ActionLogResponse>('action-log').then((response) => response.data);
 
+const getInventory = (): Promise<InventoryResponse> =>
+  apiClient<InventoryResponse>('inventory').then((response) => response.data);
+
+const saveInventory = (inventory: string): Promise<Response<InventoryResponse>> => {
+  return apiClient.post<InventoryResponse>('inventory', { inventory });
+};
+
+const getRulebookStatus = (): Promise<{ enabled: boolean }> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ enabled: MOCKED_RULEBOOK_STATUS });
+    }, 100);
+  });
+};
+
+const saveRulebookStatus = (enable: boolean): Promise<Response<void>> => {
+  const endpoint = enable ? 'enable' : 'disable';
+  MOCKED_RULEBOOK_STATUS = enable;
+  return apiClient.post(endpoint);
+};
+
+let MOCKED_RULEBOOK_STATUS = false;
+
 export {
   getAvailableSources,
   getAvailableConditions,
@@ -71,4 +99,8 @@ export {
   getLog,
   getEventLog,
   getActionLog,
+  getInventory,
+  saveInventory,
+  getRulebookStatus,
+  saveRulebookStatus,
 };
