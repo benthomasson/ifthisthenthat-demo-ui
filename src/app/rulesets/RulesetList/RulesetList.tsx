@@ -5,12 +5,12 @@ import { Link } from 'react-router-dom';
 import { Ruleset } from '@app/types';
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 
-interface PipeListProps {
-  pipes: Ruleset[];
+interface RulesetListProps {
+  rulesets: Ruleset[];
   toolbar?: React.ReactNode;
 }
-const PipeList: FunctionComponent<PipeListProps> = (props) => {
-  const { pipes, toolbar } = props;
+const RulesetList: FunctionComponent<RulesetListProps> = (props) => {
+  const { rulesets, toolbar } = props;
 
   const columnNames = {
     name: 'Name',
@@ -20,27 +20,27 @@ const PipeList: FunctionComponent<PipeListProps> = (props) => {
 
   return (
     <>
-      {pipes.length === 0 && (
+      {rulesets.length === 0 && (
         <EmptyState>
           <EmptyStateIcon icon={DataSourceIcon} />
           <Title headingLevel="h1" size="lg">
-            No Pipes Yet
+            No Reactions Yet
           </Title>
           <EmptyStateBody>
-            With a Pipe you can retrieve events from a Source and trigger an Action
+            With a reaction you can retrieve events from a Source and trigger an Action
             <br /> when a certain Condition applies.
           </EmptyStateBody>
           <EmptyStateBody>
-            <Link to={`${location.pathname}/new-pipe`}>
-              <Button variant="primary">New Pipe</Button>
+            <Link to={`${location.pathname}/create-reaction`}>
+              <Button variant="primary">Create reaction</Button>
             </Link>
           </EmptyStateBody>
         </EmptyState>
       )}
-      {pipes.length > 0 && (
+      {rulesets.length > 0 && (
         <>
           {toolbar}
-          <TableComposable aria-label="pipes">
+          <TableComposable aria-label="Reactions">
             <Thead>
               <Tr>
                 <Th>{columnNames.name}</Th>
@@ -49,7 +49,7 @@ const PipeList: FunctionComponent<PipeListProps> = (props) => {
               </Tr>
             </Thead>
             <Tbody>
-              {pipes.map((row, index) => (
+              {rulesets.map((row, index) => (
                 <Tr key={`${row.name}-${index}`}>
                   <Td dataLabel={columnNames.name}>{row.name}</Td>
                   <Td dataLabel={columnNames.source}>{row.sources[0]?.source_type}</Td>
@@ -64,4 +64,4 @@ const PipeList: FunctionComponent<PipeListProps> = (props) => {
   );
 };
 
-export default PipeList;
+export default RulesetList;

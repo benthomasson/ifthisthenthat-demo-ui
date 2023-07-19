@@ -10,12 +10,12 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
-import PipeList from '@app/pipes/PipeList/PipeList';
+import RulesetList from '@app/rulesets/RulesetList/RulesetList';
 import { useQuery } from '@tanstack/react-query';
 import { getRulesets } from '@app/api/rulebookApi';
 import { Link } from 'react-router-dom';
 
-const Rulebook: FunctionComponent = () => {
+const Rulesets: FunctionComponent = () => {
   const { data } = useQuery({
     queryKey: ['rulesets'],
     queryFn: getRulesets,
@@ -23,11 +23,11 @@ const Rulebook: FunctionComponent = () => {
   });
 
   const toolbar = (
-    <Toolbar id="pipes-toolbar">
+    <Toolbar id="reactions-toolbar">
       <ToolbarContent>
         <ToolbarItem>
-          <Link to={`${location.pathname}/new-pipe`}>
-            <Button variant="primary">New Pipe</Button>
+          <Link to={`${location.pathname}/create-reaction`}>
+            <Button variant="primary">Create reaction</Button>
           </Link>
         </ToolbarItem>
       </ToolbarContent>
@@ -38,16 +38,16 @@ const Rulebook: FunctionComponent = () => {
     <>
       <PageSection variant={PageSectionVariants.light}>
         <TextContent>
-          <Text component="h1">Pipes</Text>
+          <Text component="h1">Reactions</Text>
         </TextContent>
       </PageSection>
       <PageSection>
         <Card>
-          <PipeList pipes={data?.rulesets ?? []} toolbar={toolbar} />
+          <RulesetList rulesets={data?.rulesets ?? []} toolbar={toolbar} />
         </Card>
       </PageSection>
     </>
   );
 };
 
-export default Rulebook;
+export default Rulesets;

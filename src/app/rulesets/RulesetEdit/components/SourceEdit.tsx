@@ -8,43 +8,52 @@ import {
   TextInput,
 } from '@patternfly/react-core';
 import ConfigurationForm from '@app/components/ConfigurationForm/ConfigurationForm';
-import { PipeStateContext } from '@app/pipes/PipeEdit/PipeContextProvider';
+import { RulesetStateContext } from '@app/rulesets/RulesetEdit/RulesetContextProvider';
 import { useSelector } from '@xstate/react';
-import { pipeMachineType } from '@app/pipes/PipeEdit/pipeMachine';
+import { rulesetMachineType } from '@app/rulesets/RulesetEdit/rulesetMachine';
 import { StateFrom } from 'xstate';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
-const submissionSelector = (state: StateFrom<pipeMachineType>) => {
+const submissionSelector = (state: StateFrom<rulesetMachineType>) => {
   return state.hasTag('submitted');
 };
 
-const nameInvalidSelector = (state: StateFrom<pipeMachineType>) => {
+const nameInvalidSelector = (state: StateFrom<rulesetMachineType>) => {
   return state.hasTag('nameInvalid');
 };
 
-const sourceTypeInvalidSelector = (state: StateFrom<pipeMachineType>) => {
+const sourceTypeInvalidSelector = (state: StateFrom<rulesetMachineType>) => {
   return state.hasTag('sourceTypeInvalid');
 };
 const SourceEdit: FunctionComponent = () => {
-  const pipeServices = useContext(PipeStateContext);
-  const { send } = pipeServices.pipeService;
-  const pipeName = useSelector(pipeServices.pipeService, (state) => state.context.request.name);
+  const rulesetServices = useContext(RulesetStateContext);
+  const { send } = rulesetServices.rulesetService;
+  const reactionName = useSelector(
+    rulesetServices.rulesetService,
+    (state) => state.context.request.name
+  );
   const selectedSource = useSelector(
-    pipeServices.pipeService,
+    rulesetServices.rulesetService,
     (state) => state.context.request.source
   );
 
-  const sourceTypes = useSelector(pipeServices.pipeService, (state) => state.context.sourceTypes);
+  const sourceTypes = useSelector(
+    rulesetServices.rulesetService,
+    (state) => state.context.sourceTypes
+  );
   const selectedSourceSchema = useSelector(
-    pipeServices.pipeService,
+    rulesetServices.rulesetService,
     (state) => state.context.selectedSourceSchema
   );
 
-  const isSubmitted = useSelector(pipeServices.pipeService, submissionSelector);
-  const nameIsInvalid = useSelector(pipeServices.pipeService, nameInvalidSelector);
+  const isSubmitted = useSelector(rulesetServices.rulesetService, submissionSelector);
+  const nameIsInvalid = useSelector(rulesetServices.rulesetService, nameInvalidSelector);
   const nameValidation: FormGroupProps['validated'] =
     isSubmitted && nameIsInvalid ? 'error' : 'default';
-  const sourceTypeIsInvalid = useSelector(pipeServices.pipeService, sourceTypeInvalidSelector);
+  const sourceTypeIsInvalid = useSelector(
+    rulesetServices.rulesetService,
+    sourceTypeInvalidSelector
+  );
   const sourceTypeValidation: FormGroupProps['validated'] =
     isSubmitted && sourceTypeIsInvalid ? 'error' : 'default';
 
@@ -62,21 +71,21 @@ const SourceEdit: FunctionComponent = () => {
   return (
     <Form style={{ maxWidth: 700 }}>
       <FormGroup
-        label="Pipe Name"
+        label="Reaction name"
         isRequired
-        fieldId="pipe-name"
-        helperText="Name used to identify the Pipe."
+        fieldId="reaction-name"
+        helperText="Name used to identify the reaction."
         validated={nameValidation}
-        helperTextInvalid="Pipe Name is mandatory"
+        helperTextInvalid="Reaction name is mandatory"
         helperTextInvalidIcon={<ExclamationCircleIcon />}
       >
         <TextInput
           isRequired
           type="text"
-          id="pipe-name"
-          name="pipe-name"
+          id="reaction-name"
+          name="reaction-name"
           autoComplete="off"
-          value={pipeName}
+          value={reactionName}
           onChange={(name) => send('nameChange', { name })}
           validated={nameValidation}
         />

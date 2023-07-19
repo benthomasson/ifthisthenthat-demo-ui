@@ -1,13 +1,13 @@
 import React, { FunctionComponent, useContext } from 'react';
 import { useWizardContext, WizardFooterWrapper } from '@patternfly/react-core/next';
-import { PipeStateContext } from '@app/pipes/PipeEdit/PipeContextProvider';
+import { RulesetStateContext } from '@app/rulesets/RulesetEdit/RulesetContextProvider';
 import { Button } from '@patternfly/react-core';
 import { useSelector } from '@xstate/react';
 
 const WizardFinalStepFooter: FunctionComponent = () => {
   const { goToNextStep, goToPrevStep, close } = useWizardContext();
-  const pipeServices = useContext(PipeStateContext);
-  const isSaving = useSelector(pipeServices.pipeService, (state) => state.hasTag('saving'));
+  const rulesetServices = useContext(RulesetStateContext);
+  const isSaving = useSelector(rulesetServices.rulesetService, (state) => state.hasTag('saving'));
 
   const onNext = () => {
     goToNextStep();

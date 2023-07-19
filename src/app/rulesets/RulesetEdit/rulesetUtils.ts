@@ -1,9 +1,9 @@
 import { Ruleset } from '@app/types';
-import { PipeMachineContext } from '@app/pipes/PipeEdit/pipeMachine';
+import { RulesetMachineContext } from '@app/rulesets/RulesetEdit/rulesetMachine';
 
 export const prepareRulesetRequest = (
-  requestData: PipeMachineContext['request'],
-  selectedCondition: PipeMachineContext['selectedCondition']
+  requestData: RulesetMachineContext['request'],
+  selectedCondition: RulesetMachineContext['selectedCondition']
 ): Ruleset => {
   const expression = selectedCondition.condition?.condition;
   const regex = /{([A-Za-z0-9_$]+)}/g;

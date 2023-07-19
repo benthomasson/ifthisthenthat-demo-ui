@@ -1,19 +1,19 @@
 import React, { createContext, FunctionComponent } from 'react';
 import { useInterpret } from '@xstate/react';
-import { pipeMachine } from '@app/pipes/PipeEdit/pipeMachine';
+import { rulesetMachine } from '@app/rulesets/RulesetEdit/rulesetMachine';
 import { InterpreterFrom } from 'xstate';
-import { PipeEditProps } from '@app/pipes/PipeEdit/PipeEdit';
-import { prepareRulesetRequest } from '@app/pipes/PipeEdit/pipeUtils';
+import { RulesetEditProps } from '@app/rulesets/RulesetEdit/RulesetEdit';
+import { prepareRulesetRequest } from '@app/rulesets/RulesetEdit/rulesetUtils';
 
-export const PipeStateContext = createContext({
-  pipeService: {} as InterpreterFrom<typeof pipeMachine>,
+export const RulesetStateContext = createContext({
+  rulesetService: {} as InterpreterFrom<typeof rulesetMachine>,
 });
-type PipeStateProviderProps = Pick<
-  PipeEditProps,
+type RulesetStateProviderProps = Pick<
+  RulesetEditProps,
   'getActionTypes' | 'getSourceTypes' | 'getConditionTypes' | 'createRuleset'
 >;
-export const PipeStateProvider: FunctionComponent<PipeStateProviderProps> = (props) => {
-  const pipeService = useInterpret(pipeMachine, {
+export const RulesetStateProvider: FunctionComponent<RulesetStateProviderProps> = (props) => {
+  const rulesetService = useInterpret(rulesetMachine, {
     services: {
       fetchSourceTypes: props.getSourceTypes,
       fetchConditionTypes: (context) => props.getConditionTypes(context.request.source.source_type),
@@ -36,6 +36,8 @@ export const PipeStateProvider: FunctionComponent<PipeStateProviderProps> = (pro
   });
 
   return (
-    <PipeStateContext.Provider value={{ pipeService }}>{props.children}</PipeStateContext.Provider>
+    <RulesetStateContext.Provider value={{ rulesetService }}>
+      {props.children}
+    </RulesetStateContext.Provider>
   );
 };
