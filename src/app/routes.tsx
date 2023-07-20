@@ -8,6 +8,7 @@ import NewRuleset from '@app/pages/NewRuleset/NewRuleset';
 import { ErrorBoundaryFallback } from '@app/components/ErrorBoundaryFallBack/ErrorBoundaryFallback';
 import EventLog from '@app/pages/EventLog/EventLog';
 import ActionLog from '@app/pages/ActionLog/ActionLog';
+import Inventory from '@app/pages/Inventory/Inventory';
 
 let routeFocusTimer: number;
 export interface IAppRoute {
@@ -45,6 +46,13 @@ const routes: AppRouteConfig[] = [
     path: '/reactions/create-reaction',
     title: 'Create reaction | EDA',
     excludeFromSideNav: true,
+  },
+  {
+    component: Inventory,
+    exact: true,
+    label: 'Inventory',
+    path: '/inventory',
+    title: 'Inventory | EDA',
   },
   {
     component: EventLog,

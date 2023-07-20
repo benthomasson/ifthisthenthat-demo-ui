@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from '@app/index';
 import { inspect } from '@xstate/inspect';
+import { setDiagnosticsOptions } from 'monaco-yaml';
 
 if (process.env.NODE_ENV !== 'production') {
   const config = {
@@ -18,5 +19,12 @@ if (process.env.NODE_ENV !== 'production') {
 
   inspect({ iframe: false });
 }
+
+setDiagnosticsOptions({
+  hover: true,
+  completion: true,
+  validate: true,
+  format: true,
+});
 
 ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
