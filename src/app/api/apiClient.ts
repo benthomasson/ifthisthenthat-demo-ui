@@ -1,7 +1,7 @@
-import axios from 'redaxios';
+import axios from 'axios';
 
-const apiClient = axios.create({
-  baseURL: location.protocol + '//' + location.host
-});
+axios.defaults.baseURL = location.protocol + '//' + location.host;
+
+const apiClient = axios;
 
 export { apiClient };
