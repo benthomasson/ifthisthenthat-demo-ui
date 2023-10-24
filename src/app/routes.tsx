@@ -34,16 +34,16 @@ const routes: AppRouteConfig[] = [
   {
     component: Rulesets,
     exact: true,
-    label: 'Reactions',
-    path: '/reactions',
-    title: 'Reactions | EDA',
+    label: 'Rules',
+    path: '/rules',
+    title: 'Rules | EDA',
   },
   {
     component: NewRuleset,
     exact: true,
-    label: 'Create reaction',
-    path: '/reactions/create-reaction',
-    title: 'Create reaction | EDA',
+    label: 'Create rule',
+    path: '/rules/create-rule',
+    title: 'Create rule | EDA',
     excludeFromSideNav: true,
   },
   {
@@ -113,7 +113,7 @@ const AppRoutes = (): React.ReactElement => (
   <ErrorBoundaryFallback>
     <Switch>
       <Route path={'/'} exact>
-        <Redirect to="/reactions" />
+        <Redirect to="/rules" />
       </Route>
       {flattenedRoutes.map(({ path, exact, component, title }, idx) => (
         <RouteWithTitleUpdates

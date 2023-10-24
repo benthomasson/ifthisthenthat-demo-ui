@@ -28,7 +28,7 @@ const sourceTypeInvalidSelector = (state: StateFrom<rulesetMachineType>) => {
 const SourceEdit: FunctionComponent = () => {
   const rulesetServices = useContext(RulesetStateContext);
   const { send } = rulesetServices.rulesetService;
-  const reactionName = useSelector(
+  const ruleName = useSelector(
     rulesetServices.rulesetService,
     (state) => state.context.request.name
   );
@@ -71,21 +71,21 @@ const SourceEdit: FunctionComponent = () => {
   return (
     <Form style={{ maxWidth: 700 }}>
       <FormGroup
-        label="Reaction name"
+        label="Rule name"
         isRequired
-        fieldId="reaction-name"
-        helperText="Name used to identify the reaction."
+        fieldId="rule-name"
+        helperText="Name used to identify the rule."
         validated={nameValidation}
-        helperTextInvalid="Reaction name is mandatory"
+        helperTextInvalid="Rule name is mandatory"
         helperTextInvalidIcon={<ExclamationCircleIcon />}
       >
         <TextInput
           isRequired
           type="text"
-          id="reaction-name"
-          name="reaction-name"
+          id="rule-name"
+          name="rule-name"
           autoComplete="off"
-          value={reactionName}
+          value={ruleName}
           onChange={(name) => send('nameChange', { name })}
           validated={nameValidation}
         />

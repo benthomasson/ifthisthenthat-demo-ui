@@ -49,7 +49,7 @@ function Login(props) {
         } else {
           localStorage.setItem('token', response.data.access_token);
           axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
-          history.push('/reactions');
+          history.push('/rules');
         }
       });
     }

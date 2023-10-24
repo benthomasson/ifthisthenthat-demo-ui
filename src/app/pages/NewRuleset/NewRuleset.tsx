@@ -20,7 +20,7 @@ import {
 
 const NewRuleset: FunctionComponent = () => {
   const history = useHistory();
-  const goToHome = () => history.push(`/reactions`);
+  const goToHome = () => history.push(`/rules`);
 
   const handleCreateRuleset: RulesetEditProps['createRuleset'] = (
     requestData,
@@ -41,16 +41,16 @@ const NewRuleset: FunctionComponent = () => {
           <BreadcrumbItem
             render={({ className }): React.ReactNode => (
               <Link to={'/'} className={className}>
-                Reactions
+                Rules
               </Link>
             )}
           />
-          <BreadcrumbItem isActive>Create reaction</BreadcrumbItem>
+          <BreadcrumbItem isActive>Create rule</BreadcrumbItem>
         </Breadcrumb>
       </PageBreadcrumb>
       <PageSection variant={PageSectionVariants.light} isWidthLimited>
         <TextContent>
-          <Text component="h1">Create reaction</Text>
+          <Text component="h1">Create rule</Text>
         </TextContent>
       </PageSection>
       <PageSection type={PageSectionTypes.wizard} isWidthLimited>
