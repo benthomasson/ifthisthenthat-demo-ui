@@ -57,7 +57,7 @@ const getLog = (): Promise<LogResponse> =>
   apiClient<LogResponse>('log').then((response) => response.data);
 
 const getEventLog = (): Promise<EventLogResponse> =>
-  apiClient<EventLogResponse>('ansible-event-log').then((response) => response.data);
+  apiClient<EventLogResponse>('payloads').then((response) => response.data);
 
 const getActionLog = (): Promise<ActionLogResponse> =>
   apiClient<ActionLogResponse>('action-log').then((response) => response.data);

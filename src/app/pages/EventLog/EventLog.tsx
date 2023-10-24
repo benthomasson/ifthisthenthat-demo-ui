@@ -11,7 +11,7 @@ const EventLog: FunctionComponent = () => {
     refetchInterval: 4000,
   });
 
-  const filteredEvents = eventLog.data?.events.filter((event) => event.event.stdout.length > 0);
+  const filteredEvents = eventLog.data?.events;
 
   return (
     <>

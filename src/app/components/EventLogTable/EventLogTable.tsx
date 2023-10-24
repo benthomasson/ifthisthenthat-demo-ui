@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { CodeBlock, CodeBlockCode } from '@patternfly/react-core';
 import {
   Bullseye,
   EmptyState,
@@ -19,9 +20,8 @@ const EventLogTable: FunctionComponent<EventLogTableProps> = (props) => {
   const { events } = props;
 
   const columnNames = {
-    event: 'Event Type',
-    runAt: 'Run at',
-    stdout: 'Output',
+    event: 'Event',
+    timestamp: 'Timestamp',
   };
 
   const noEntries = (
@@ -46,22 +46,22 @@ const EventLogTable: FunctionComponent<EventLogTableProps> = (props) => {
       <TableComposable aria-label="event log" borders={true}>
         <Thead>
           <Tr>
+            <Th>{columnNames.timestamp}</Th>
             <Th>{columnNames.event}</Th>
-            <Th>{columnNames.runAt}</Th>
-            <Th>{columnNames.stdout}</Th>
           </Tr>
         </Thead>
         <Tbody>
           {events.length === 0 && noEntries}
           {events.map((row) => (
-            <Tr key={row.event.uuid}>
-              <Td dataLabel={columnNames.event}>{row.event.event.replace(/_/g, ' ')}</Td>
-              <Td dataLabel={columnNames.runAt} modifier={'nowrap'} className={'monospaced'}>
-                {formatDate(row.run_at)}
+            <Tr key={row.timestamp}>
+              <Td dataLabel={columnNames.timestamp} modifier={'nowrap'} className={'monospaced'}>
+                {formatDate(row.timestamp)}
               </Td>
-              <Td dataLabel={columnNames.stdout} className={'monospaced'}>
-                {row.event.stdout}
-              </Td>
+              <Td dataLabel={columnNames.event}>
+    <CodeBlock>
+      <CodeBlockCode>{JSON.stringify(row.event, null, 2)}</CodeBlockCode>
+    </CodeBlock>
+</Td>
             </Tr>
           ))}
         </Tbody>
