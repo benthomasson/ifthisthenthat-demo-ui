@@ -3,7 +3,7 @@ import axios from 'axios';
 import { LoginForm, LoginPage } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
-import Logo from '../../../assets/images/logo-masthead.svg';
+import Logo from '@app/bgimages/Patternfly-Logo.svg';
 import { loginUser } from '@app/api/auth';
 
 function Login(props) {

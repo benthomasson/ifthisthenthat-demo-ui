@@ -20,7 +20,7 @@ import {
 
 const NewRuleset: FunctionComponent = () => {
   const history = useHistory();
-  const goToHome = () => history.push(`/`);
+  const goToHome = () => history.push(`/reactions`);
 
   const handleCreateRuleset: RulesetEditProps['createRuleset'] = (
     requestData,
