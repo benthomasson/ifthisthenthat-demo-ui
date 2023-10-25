@@ -41,23 +41,8 @@ export interface Ruleset {
 }
 
 export interface EventLog {
-  type: string;
-  event: {
-    uuid: string;
-    counter: number;
-    stdout: string;
-    start_line: number;
-    end_line: number;
-    runner_ident: string;
-    event: 'string';
-    ad_hoc_command_id: number;
-    pid: number;
-    created: string;
-    event_data: Record<string, unknown>;
-    job_id: string;
-    ansible_rulebook_id: string;
-  };
-  run_at: string;
+  event: object;
+  timestamp: string;
 }
 
 export interface ActionLog {
